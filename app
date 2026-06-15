@@ -1,0 +1,986 @@
+Mismo procedimiento de siempre: `index.html` → ✏️ Edit → seleccionar todo → borrar → pegar esto → Commit changes.
+
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="theme-color" content="#0056a7">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Gestor Químico Ollearis</title>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+  
+  <style>
+    :root {
+      --primary: #0056a7;
+      --primary-dark: #004a8f;
+      --bg-app: #f0f4f8;
+      --surface: #ffffff;
+      --text-main: #1a1a2e;
+      --text-muted: #718096;
+      --border: #e2e8f0;
+      --success: #00c853;
+      --danger: #ff3d00;
+      --warning: #ff9100;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html { scroll-behavior: smooth; height: 100%; }
+    
+    body { 
+      background: var(--bg-app); 
+      color: var(--text-main); 
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+      padding: 0 0 100px; 
+      line-height: 1.5; 
+      min-height: 100dvh; 
+      -webkit-font-smoothing: antialiased; 
+    }
+
+    /* ===== HEADER ===== */
+    .header { 
+      background: var(--primary); 
+      padding: 20px 16px 24px; 
+      color: #fff; 
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .header-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .header-brand { display: flex; align-items: center; gap: 12px; }
+    .logo { 
+      width: 46px; height: 46px; background: #fff; border-radius: 12px; 
+      display: flex; align-items: center; justify-content: center; 
+      font-size: 24px; font-weight: 900; color: var(--primary); flex-shrink: 0; 
+    }
+    .header-titles h1 { font-size: 22px; font-weight: 900; letter-spacing: 0.5px; line-height: 1.1; }
+    .header-titles p { font-size: 11px; color: rgba(255,255,255,0.8); margin-top: 3px; font-weight: 600; }
+    
+    .operator-box { background: rgba(255,255,255,0.18); border-radius: 12px; padding: 6px 12px; text-align: center; }
+    .operator-box label { display: block; font-size: 9px; color: rgba(255,255,255,0.8); text-transform: uppercase; font-weight: 700; margin-bottom: 2px; }
+    .operator-box select { 
+      background: transparent; border: none; color: #fff; font-size: 14px; font-weight: 700; 
+      outline: none; cursor: pointer; -webkit-appearance: none; text-align: center; margin-bottom: 0; padding: 2px 8px;
+    }
+    .operator-box select option { color: var(--text-main); }
+
+    /* ===== CONTENT ===== */
+    .content { padding: 16px; max-width: 600px; margin: 0 auto; }
+    .section-title { font-size: 22px; font-weight: 800; color: var(--primary); margin: 8px 0 16px; }
+
+    /* ===== CARDS ===== */
+    .card { background: var(--surface); border-radius: 16px; padding: 18px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+    .card-title { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 12px; }
+
+    /* ===== FORM INPUTS ===== */
+    input[type=text], input[type=password], textarea, select {
+      width: 100%; background: #f8f9fa; border: 1.5px solid var(--border); border-radius: 12px; 
+      color: var(--text-main); padding: 14px 16px; font-size: 16px; outline: none; 
+      transition: all 0.2s ease; -webkit-appearance: none; margin-bottom: 12px;
+    }
+    input:focus, textarea:focus, select:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 3px rgba(0,86,167,0.15); }
+    textarea { min-height: 120px; resize: vertical; font-family: inherit; }
+
+    /* ===== BUTTONS ===== */
+    .btn { 
+      width: 100%; min-height: 54px; border: none; border-radius: 14px; font-size: 16px; font-weight: 800; 
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; 
+      transition: all 0.2s ease; touch-action: manipulation; margin-bottom: 12px;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+    .btn-primary { background: var(--primary); color: #fff; box-shadow: 0 4px 12px rgba(0,86,167,0.2); }
+    .btn-primary:active:not(:disabled) { background: var(--primary-dark); }
+    .btn-secondary { background: #e2e8f0; color: var(--primary); }
+    .btn-danger { background: var(--danger); color: #fff; }
+
+    /* ===== MODE SELECTOR ===== */
+    .mode-sel { display: flex; gap: 8px; margin-bottom: 16px; background: #e2e8f0; padding: 4px; border-radius: 14px; }
+    .mode-btn { 
+      flex: 1; padding: 12px; background: transparent; border: none; border-radius: 10px; 
+      color: var(--text-muted); font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; 
+    }
+    .mode-btn.on { background: var(--surface); color: var(--primary); box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+
+    /* ===== UPLOAD AREA ===== */
+    .upload-area { 
+      background: #f8f9fa; border: 2px dashed #cbd5e0; border-radius: 16px; 
+      padding: 32px 20px; text-align: center; margin-bottom: 16px; position: relative; cursor: pointer;
+    }
+    .upload-area.has-image { border-color: var(--success); border-style: solid; background: rgba(0,200,83,0.02); }
+    .upload-icon { font-size: 40px; margin-bottom: 10px; }
+    .upload-title { font-size: 15px; font-weight: 700; color: #4a5568; margin-bottom: 4px; }
+    .upload-sub { font-size: 12px; color: var(--text-muted); }
+    .upload-preview { width: 100%; max-height: 220px; object-fit: contain; border-radius: 12px; display: none; }
+    
+    .upload-area.has-image .upload-icon, 
+    .upload-area.has-image .upload-title, 
+    .upload-area.has-image .upload-sub { display: none; }
+    .upload-area.has-image .upload-preview { display: block; }
+
+    /* ===== CAMERA GRID ===== */
+    .cam-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+    .cam-btn { 
+      position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; 
+      background: var(--surface); border: 1.5px solid var(--border); border-radius: 14px; padding: 16px; 
+      cursor: pointer; transition: all 0.2s; min-height: 90px; box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
+    .cam-btn:active { background: #edf2f7; }
+    .cam-btn input[type=file] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 10; }
+    .cam-btn .icon { font-size: 26px; }
+    .cam-btn .txt { font-size: 13px; font-weight: 700; color: #4a5568; }
+
+    /* ===== TOGGLE ROW ===== */
+    .toggle-row { 
+      display: flex; justify-content: space-between; align-items: center; 
+      background: var(--surface); border-radius: 14px; padding: 16px; margin-bottom: 16px; 
+      box-shadow: 0 4px 12px rgba(0,0,0,0.02); 
+    }
+    .toggle-text { font-size: 14px; font-weight: 700; color: var(--text-main); }
+    .toggle-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    
+    .switch { position: relative; width: 52px; height: 28px; flex-shrink: 0; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; inset: 0; background: #cbd5e0; border-radius: 28px; cursor: pointer; transition: .2s; }
+    .slider:before { 
+      content: ""; position: absolute; width: 22px; height: 22px; left: 3px; top: 3px; 
+      background: #fff; border-radius: 50%; transition: .2s; box-shadow: 0 1px 4px rgba(0,0,0,0.2); 
+    }
+    input:checked + .slider { background: var(--primary); }
+    input:checked + .slider:before { transform: translateX(24px); }
+
+    /* ===== TOAST ===== */
+    .toast { 
+      position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); 
+      background: var(--text-main); color: #fff; border-radius: 12px; padding: 14px 24px; 
+      font-size: 14px; font-weight: 700; z-index: 300; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+      opacity: 0; box-shadow: 0 10px 25px rgba(0,0,0,0.2); pointer-events: none; max-width: 90vw; 
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .toast.ok { border-left: 4px solid var(--success); }
+    .toast.err { border-left: 4px solid var(--danger); }
+
+    /* ===== BOTTOM NAV ===== */
+    .bottom-nav { 
+      display: flex; position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); 
+      border-top: 1px solid var(--border); z-index: 200; padding-bottom: env(safe-area-inset-bottom, 0); 
+      box-shadow: 0 -4px 16px rgba(0,0,0,0.04); 
+    }
+    .nav-item { 
+      flex: 1; padding: 12px 4px; background: none; border: none; color: var(--text-muted); 
+      font-size: 11px; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; 
+      align-items: center; gap: 4px; position: relative; 
+    }
+    .nav-item.on { color: var(--primary); }
+    .nav-item.on::after { 
+      content: ""; position: absolute; top: 0; left: 50%; transform: translateX(-50%); 
+      width: 32px; height: 3px; background: var(--primary); border-radius: 0 0 3px 3px; 
+    }
+    .nav-icon { font-size: 22px; }
+
+    .hidden { display: none !important; }
+
+    @supports(padding: max(0px)) {
+      body { padding-bottom: max(100px, env(safe-area-inset-bottom)); }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="toast" class="toast"></div>
+
+  <div class="header">
+    <div class="header-top">
+      <div class="header-brand">
+        <div class="logo">O</div>
+        <div class="header-titles">
+          <h1>GESTOR QUÍMICO</h1>
+          <p>OLLEARIS · LER · CLP · GHS · ADR 2026</p>
+        </div>
+      </div>
+      <div class="operator-box">
+        <label for="operator">Operario</label>
+        <select id="operator" onchange="saveOperator()">
+          <option value="">Seleccionar</option>
+          <option value="Juan">Juan</option>
+          <option value="María">María</option>
+          <option value="Carlos">Carlos</option>
+          <option value="Ana">Ana</option>
+          <option value="Pedro">Pedro</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <div id="tab-residuos" class="tab-content">
+      <div class="section-title">Clasificación de residuos</div>
+
+      <div class="card">
+        <div class="card-title">Configuración de Seguridad</div>
+        <input type="password" id="apiKey" placeholder="Clave API Gemini (AIza...)" autocomplete="off" spellcheck="false" autocapitalize="off" oninput="autoSaveApiKey()">
+        <div id="keyStatus" style="font-size:12px; font-weight:600; color:var(--text-muted)">✗ Clave requerida</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Trazabilidad (Sage 200)</div>
+        <input type="text" id="res-lote" placeholder="Nº de Lote/Partida o Ubicación de origen">
+      </div>
+
+      <div class="mode-sel">
+        <button class="mode-btn on" id="mode-res-foto" onclick="setResMode('foto')">📷 Foto Envase</button>
+        <button class="mode-btn" id="mode-res-texto" onclick="setResMode('texto')">⌨️ Descripción</button>
+      </div>
+
+      <div id="res-foto-panel">
+        <div class="upload-area" id="res-upload-area" onclick="triggerGalleryPicker('res')">
+          <div class="upload-icon">🖼️</div>
+          <div class="upload-title">Inserta la captura del envase</div>
+          <div class="upload-sub">Formatos aceptados: JPG, PNG, WEBP</div>
+          <img id="res-preview" class="upload-preview" alt="Vista previa del residuo">
+        </div>
+        <div class="cam-grid">
+          <label class="cam-btn" for="res-camera">
+            <input type="file" id="res-camera" accept="image/*" capture="environment" onchange="handleImage(this,'res')">
+            <div class="icon">📷</div>
+            <div class="txt">Cámara</div>
+          </label>
+          <label class="cam-btn" for="res-gallery">
+            <input type="file" id="res-gallery" accept="image/*" onchange="handleImage(this,'res')">
+            <div class="icon">🖼️</div>
+            <div class="txt">Galería</div>
+          </label>
+        </div>
+      </div>
+
+      <div id="res-texto-panel" class="hidden">
+        <div class="card">
+          <div class="card-title">Detalles del Residuo Industrial</div>
+          <textarea id="res-desc" placeholder="Ej: Bidón de 20L con restos de disolvente orgánico, etiqueta borrada, olor característico a acetona..." oninput="checkResText()"></textarea>
+        </div>
+      </div>
+
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-text">¿Tránsito internacional / Exportación?</div>
+          <div class="toggle-sub" id="export-sub">Gestión interna · Ámbito nacional español</div>
+        </div>
+        <label class="switch" for="export-toggle">
+          <input type="checkbox" id="export-toggle" onchange="updateExportToggle()">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <button class="btn btn-primary" id="btn-clasificar" disabled onclick="clasificarResiduo()">
+        🔍 ANALIZAR Y CLASIFICAR
+      </button>
+
+      <div id="res-results"></div>
+    </div>
+
+    <div id="tab-etiqueta" class="tab-content hidden">
+      <div class="section-title">Verificación de etiquetado</div>
+
+      <div class="card">
+        <div class="card-title">Trazabilidad (Sage 200)</div>
+        <input type="text" id="etq-lote" placeholder="Nº de Lote/Partida o Referencia de producto">
+      </div>
+
+      <div class="mode-sel">
+        <button class="mode-btn on" id="mode-etq-foto" onclick="setEtqMode('foto')">📷 Captura Etiqueta</button>
+        <button class="mode-btn" id="mode-etq-texto" onclick="setEtqMode('texto')">⌨️ Texto Manual</button>
+      </div>
+
+      <div id="etq-foto-panel">
+        <div class="upload-area" id="etq-upload-area" onclick="triggerGalleryPicker('etq')">
+          <div class="upload-icon">🏷️</div>
+          <div class="upload-title">Fotografía la etiqueta CLP del producto</div>
+          <div class="upload-sub">Asegura buena iluminación del texto</div>
+          <img id="etq-preview" class="upload-preview" alt="Vista previa de etiqueta">
+        </div>
+        <div class="cam-grid">
+          <label class="cam-btn" for="etq-camera">
+            <input type="file" id="etq-camera" accept="image/*" capture="environment" onchange="handleImage(this,'etq')">
+            <div class="icon">📷</div>
+            <div class="txt">Cámara</div>
+          </label>
+          <label class="cam-btn" for="etq-gallery">
+            <input type="file" id="etq-gallery" accept="image/*" onchange="handleImage(this,'etq')">
+            <div class="icon">🖼️</div>
+            <div class="txt">Galería</div>
+          </label>
+        </div>
+      </div>
+
+      <div id="etq-texto-panel" class="hidden">
+        <div class="card">
+          <div class="card-title">Ficha técnica o composición descrita</div>
+          <textarea id="etq-desc" placeholder="Ej: Ácido clorhídrico 37%, marca comercial, pictograma GHS05 Corrosivo, Frases H314..." oninput="checkEtqText()"></textarea>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" id="btn-verificar" disabled onclick="verificarEtiqueta()">
+        🏷️ VERIFICAR ETIQUETADO CLP
+      </button>
+
+      <div id="etq-results"></div>
+    </div>
+
+    <div id="tab-historial" class="tab-content hidden">
+      <div class="section-title">Registro histórico de análisis</div>
+      <div id="historial-list"></div>
+      <button class="btn btn-danger" onclick="clearHistorial()" style="margin-top:12px;">
+        🗑️ Vaciar Historial Completo
+      </button>
+    </div>
+
+  </div>
+
+  <div class="bottom-nav">
+    <button class="nav-item on" id="nav-residuos" onclick="switchTab('residuos')">
+      <span class="nav-icon">🧪</span>
+      <span>RESIDUOS</span>
+    </button>
+    <button class="nav-item" id="nav-etiqueta" onclick="switchTab('etiqueta')">
+      <span class="nav-icon">🏷️</span>
+      <span>ETIQUETAS</span>
+    </button>
+    <button class="nav-item" id="nav-historial" onclick="switchTab('historial')">
+      <span class="nav-icon">📋</span>
+      <span>HISTORIAL</span>
+    </button>
+  </div>
+
+  <script>
+    // ===== CONFIGURACIÓN API Y PROMPT NORMATIVO DEL INSPECTOR QUÍMICO =====
+    const GEMINI_URL = (key) => `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`;
+
+    const systemInstruction = `Eres un sistema experto en seguridad química industrial y logística de almacenamiento, especializado en el estricto cumplimiento del Reglamento Europeo CLP (CE Nº 1272/2008), el Sistema Globalmente Armonizado (SGA / GHS), el Acuerdo ADR 2026 y la Lista Europea de Residuos (Decisión 2000/532/CE - Código LER).
+
+Tu tarea es analizar la información proporcionada (ya sea una imagen de un envase/etiqueta o una descripción textual) y generar obligatoriamente un objeto JSON con la estructura exacta que se detalla a continuación. No debes incluir ninguna introducción, saludos, explicaciones preliminares ni bloques de código markdown (como \`\`\`json ... \`\`\`). Devuelve únicamente el texto plano del JSON.
+
+Estructura JSON requerida:
+{
+  "producto": {
+    "nombre_comercial": "Nombre o descripción identificada del producto químico o residuo",
+    "componentes_activos": ["Sustancia o compuesto A", "Sustancia o compuesto B"]
+  },
+  "clp": {
+    "pictogramas_codigo": ["GHS02", "GHS07"],
+    "palabra_advertencia": "PELIGRO / ATENCIÓN / NINGUNA",
+    "frases_h": ["H225", "H319"],
+    "frases_p": ["P210", "P280"]
+  },
+  "gestion_residuos": {
+    "codigo_ler": "XXXXXX",
+    "peligroso": true,
+    "descripcion_ler": "Descripción oficial del código asignado dentro de la Lista Europea de Residuos"
+  },
+  "almacenamiento_adq_adr": {
+    "clase_adr": "Clase de peligro ADR identificada (ej: Clase 3 Líquidos Inflamables)",
+    "incompatibilidades_criticas": [
+      "Incompatibilidad 1 (ej: No almacenar junto a sustancias de Clase 5.1 Comburentes)",
+      "Incompatibilidad 2"
+    ],
+    "medidas_confinamiento": "Requisitos de almacenamiento, ventilación, distancias o cubeto de retención según la normativa de almacenamiento de productos químicos aplicable"
+  },
+  "verificacion_etiqueta": {
+    "conforme": true,
+    "deficiencias_detectadas": [
+      "Si conforme es false, listar aquí las faltas detectadas (ej: Falta pictograma obligatorio de peligro para el medio ambiente GHS09 o frases H obligatorias)"
+    ]
+  }
+}
+
+Reglas operativas estrictas:
+1. Si los datos indican que el residuo es peligroso, el valor de "peligroso" debe ser true y el "codigo_ler" debe corresponder al código oficial con asterisco (*).
+2. Si el operario ha marcado la opción de exportación o tránsito internacional, valida que las Frases H y P utilicen la nomenclatura estandarizada internacional del SGA/GHS y añade en "medidas_confinamiento" cualquier consideración idiomática o de etiquetado para aduanas.
+3. Mantén las respuestas técnicas, concisas y directamente ligadas a los códigos oficiales vigentes de las normativas. Si la información proporcionada es insuficiente para determinar algún campo, utiliza valores lógicos coherentes basados en el peor escenario de riesgo (principio de prudencia).`;
+
+    // ===== CONTROL DE ESTADO GLOBAL =====
+    const state = {
+      images: { res: null, etq: null },
+      modes: { res: 'foto', etq: 'foto' },
+      currentTab: 'residuos',
+      lastResiduo: null,
+      lastEtiqueta: null,
+      historial: JSON.parse(localStorage.getItem('gq_historial') || '[]')
+    };
+
+    // Inicialización de la App
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedKey = localStorage.getItem('gq_apikey') || '';
+      if (savedKey) {
+        document.getElementById('apiKey').value = savedKey;
+        showKeyStatus(true);
+      }
+      const savedOperator = localStorage.getItem('gq_operator') || '';
+      if (savedOperator) {
+        document.getElementById('operator').value = savedOperator;
+      }
+      renderHistorial();
+    });
+
+    // ===== GESTIÓN DE CREDENCIALES AUTOMÁTICA =====
+    function autoSaveApiKey() {
+      const keyInput = document.getElementById('apiKey').value.trim();
+      if (keyInput.length > 10) {
+        localStorage.setItem('gq_apikey', keyInput);
+        showKeyStatus(true);
+      } else {
+        showKeyStatus(false);
+      }
+    }
+
+    function showKeyStatus(isConfigured) {
+      const statusLabel = document.getElementById('keyStatus');
+      statusLabel.textContent = isConfigured ? '✓ Clave API Configurada' : '✗ Clave requerida';
+      statusLabel.style.color = isConfigured ? 'var(--success)' : 'var(--danger)';
+      updateActionButtonsState();
+    }
+
+    function saveOperator() {
+      const operatorValue = document.getElementById('operator').value;
+      localStorage.setItem('gq_operator', operatorValue);
+      showToast(`Operario asignado: ${operatorValue || 'Ninguno'}`);
+    }
+
+    // ===== NAVEGACIÓN =====
+    function switchTab(targetTab) {
+      state.currentTab = targetTab;
+      ['residuos', 'etiqueta', 'historial'].forEach(tabName => {
+        document.getElementById('tab-' + tabName).classList.toggle('hidden', tabName !== targetTab);
+        document.getElementById('nav-' + tabName).classList.toggle('on', tabName === targetTab);
+      });
+      if (targetTab === 'historial') renderHistorial();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ===== MANEJO DE IMÁGENES =====
+    function handleImage(inputElement, modulePrefix) {
+      const file = inputElement.files && inputElement.files[0];
+      if (!file) {
+        showToast('No se seleccionó ningún archivo', 'err');
+        return;
+      }
+
+      showToast('Archivo recibido: ' + (file.name || 'imagen'), 'ok', 2000);
+
+      if (!file.type || !file.type.startsWith('image/')) {
+        showToast('El archivo seleccionado no es una imagen (' + (file.type || 'tipo desconocido') + ')', 'err');
+        inputElement.value = '';
+        return;
+      }
+
+      const previewElement = document.getElementById(`${modulePrefix}-preview`);
+      const uploadArea = document.getElementById(`${modulePrefix}-upload-area`);
+
+      // Vista previa inmediata mediante Object URL (no depende de FileReader)
+      try {
+        const objectUrl = URL.createObjectURL(file);
+        previewElement.src = objectUrl;
+        uploadArea.classList.add('has-image');
+      } catch (err) {
+        console.error('Object URL error', err);
+        showToast('No se pudo mostrar la vista previa: ' + err.message, 'err');
+      }
+
+      const reader = new FileReader();
+
+      reader.onerror = function() {
+        console.error('FileReader error', reader.error);
+        showToast('No se pudo preparar la imagen para el análisis (FileReader)', 'err');
+      };
+
+      reader.onload = function(e) {
+        state.images[modulePrefix] = e.target.result;
+        showToast('Imagen lista para analizar');
+        updateActionButtonsState();
+      };
+
+      try {
+        reader.readAsDataURL(file);
+      } catch (err) {
+        console.error(err);
+        showToast('Error al leer la imagen: ' + err.message, 'err');
+      } finally {
+        // Permite volver a seleccionar el mismo archivo si se repite la operación
+        inputElement.value = '';
+      }
+    }
+
+    // Abre el selector de galería al tocar el área de previsualización
+    function triggerGalleryPicker(modulePrefix) {
+      const galleryInput = document.getElementById(`${modulePrefix}-gallery`);
+      if (galleryInput) galleryInput.click();
+    }
+
+    // ===== MODOS DE TRABAJO =====
+    function setResMode(mode) {
+      state.modes.res = mode;
+      document.getElementById('mode-res-foto').classList.toggle('on', mode === 'foto');
+      document.getElementById('mode-res-texto').classList.toggle('on', mode === 'texto');
+      document.getElementById('res-foto-panel').classList.toggle('hidden', mode !== 'foto');
+      document.getElementById('res-texto-panel').classList.toggle('hidden', mode !== 'texto');
+      updateActionButtonsState();
+    }
+
+    function setEtqMode(mode) {
+      state.modes.etq = mode;
+      document.getElementById('mode-etq-foto').classList.toggle('on', mode === 'foto');
+      document.getElementById('mode-etq-texto').classList.toggle('on', mode === 'texto');
+      document.getElementById('etq-foto-panel').classList.toggle('hidden', mode !== 'foto');
+      document.getElementById('etq-texto-panel').classList.toggle('hidden', mode !== 'texto');
+      updateActionButtonsState();
+    }
+
+    function checkResText() { updateActionButtonsState(); }
+    function checkEtqText() { updateActionButtonsState(); }
+
+    function updateExportToggle() {
+      const toggle = document.getElementById('export-toggle').checked;
+      document.getElementById('export-sub').textContent = toggle ? 
+        'Logística comunitaria internacional GHS/ADR 2026' : 'Gestión interna · Ámbito nacional español';
+    }
+
+    function updateActionButtonsState() {
+      const hasApiKey = (localStorage.getItem('gq_apikey') || '').length > 10;
+      const isResValid = state.modes.res === 'foto' ? !!state.images.res : document.getElementById('res-desc').value.trim().length > 5;
+      document.getElementById('btn-clasificar').disabled = !(hasApiKey && isResValid);
+      const isEtqValid = state.modes.etq === 'foto' ? !!state.images.etq : document.getElementById('etq-desc').value.trim().length > 5;
+      document.getElementById('btn-verificar').disabled = !(hasApiKey && isEtqValid);
+    }
+
+    function showToast(message, type = 'ok', duration = 3000) {
+      const toastElement = document.getElementById('toast');
+      toastElement.textContent = message;
+      toastElement.className = `toast ${type === 'ok' ? 'ok' : 'err'}`;
+      requestAnimationFrame(() => toastElement.classList.add('show'));
+      setTimeout(() => toastElement.classList.remove('show'), duration);
+    }
+
+    // ===== LLAMADA GENÉRICA A GEMINI =====
+    async function llamarGemini(payload) {
+      const apiKey = localStorage.getItem('gq_apikey');
+      if (!apiKey) throw new Error('Falta la clave API de Gemini');
+
+      const response = await fetch(GEMINI_URL(apiKey), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...payload,
+          systemInstruction: { parts: [{ text: systemInstruction }] },
+          generationConfig: {
+            responseMimeType: "application/json",
+            temperature: 0.1
+          }
+        })
+      });
+
+      if (!response.ok) {
+        let detalle = '';
+        try {
+          const errBody = await response.json();
+          detalle = errBody?.error?.message ? `: ${errBody.error.message}` : '';
+        } catch (e) {}
+        throw new Error(`Error en el servidor API (${response.status})${detalle}`);
+      }
+
+      const data = await response.json();
+      const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!rawText) throw new Error('La API no devolvió contenido analizable');
+
+      try {
+        return JSON.parse(rawText);
+      } catch (e) {
+        // Por si el modelo añade restos de markdown a pesar de la instrucción
+        const limpio = rawText.replace(/```json|```/g, '').trim();
+        return JSON.parse(limpio);
+      }
+    }
+
+    // ===== MÓDULO RESIDUOS =====
+    async function clasificarResiduo() {
+      const apiKey = localStorage.getItem('gq_apikey');
+      const operator = localStorage.getItem('gq_operator') || 'No especificado';
+      const lote = document.getElementById('res-lote').value.trim() || 'Sin asignar';
+      const isExport = document.getElementById('export-toggle').checked;
+      const resultsDiv = document.getElementById('res-results');
+      const btn = document.getElementById('btn-clasificar');
+
+      if (!apiKey) {
+        showToast('Falta la clave API de Gemini', 'err');
+        return;
+      }
+
+      btn.disabled = true;
+      resultsDiv.innerHTML = `<div class="card" style="text-align:center;">⏳ Procesando análisis normativo bajo CLP/ADR/LER...</div>`;
+
+      try {
+        let payload = {};
+
+        if (state.modes.res === 'foto' && state.images.res) {
+          const base64Parts = state.images.res.split(',');
+          const mimeType = base64Parts[0].match(/:(.*?);/)[1];
+          const base64Data = base64Parts[1];
+
+          payload = {
+            contents: [{
+              parts: [
+                { text: `Analiza este residuo industrial para su clasificación LER/CLP/ADR. Exportación Internacional activa: ${isExport}. Operario en turno: ${operator}. Lote/Partida Sage 200: ${lote}` },
+                { inlineData: { mimeType: mimeType, data: base64Data } }
+              ]
+            }]
+          };
+        } else {
+          const textDesc = document.getElementById('res-desc').value;
+          payload = {
+            contents: [{
+              parts: [{ text: `Analiza la descripción del residuo: "${textDesc}". Exportación Internacional activa: ${isExport}. Operario en turno: ${operator}. Lote/Partida Sage 200: ${lote}` }]
+            }]
+          };
+        }
+
+        const jsonResponse = await llamarGemini(payload);
+
+        state.lastResiduo = jsonResponse;
+        renderResultadosQuimicos(jsonResponse, resultsDiv, operator, lote);
+        saveToHistorial('Clasificación Residuos', jsonResponse.producto?.nombre_comercial || 'Residuo Analizado', operator, lote, jsonResponse);
+        showToast('Análisis normativo completado');
+
+      } catch (error) {
+        console.error(error);
+        resultsDiv.innerHTML = `<div class="card" style="border-left:4px solid var(--danger);">❌ Error de procesamiento: ${error.message}</div>`;
+        showToast('Error de análisis', 'err');
+      } finally {
+        btn.disabled = false;
+        updateActionButtonsState();
+      }
+    }
+
+    // ===== MÓDULO ETIQUETAS =====
+    async function verificarEtiqueta() {
+      const apiKey = localStorage.getItem('gq_apikey');
+      const operator = localStorage.getItem('gq_operator') || 'No especificado';
+      const lote = document.getElementById('etq-lote').value.trim() || 'Sin asignar';
+      const resultsDiv = document.getElementById('etq-results');
+      const btn = document.getElementById('btn-verificar');
+
+      if (!apiKey) {
+        showToast('Falta la clave API de Gemini', 'err');
+        return;
+      }
+
+      btn.disabled = true;
+      resultsDiv.innerHTML = `<div class="card" style="text-align:center;">⏳ Validando parámetros CLP/SGA del etiquetado...</div>`;
+
+      try {
+        let payload = {};
+
+        if (state.modes.etq === 'foto' && state.images.etq) {
+          const base64Parts = state.images.etq.split(',');
+          const mimeType = base64Parts[0].match(/:(.*?);/)[1];
+          const base64Data = base64Parts[1];
+
+          payload = {
+            contents: [{
+              parts: [
+                { text: `Verifica si el etiquetado CLP de esta imagen es conforme. Operario en turno: ${operator}. Lote/Partida Sage 200: ${lote}` },
+                { inlineData: { mimeType: mimeType, data: base64Data } }
+              ]
+            }]
+          };
+        } else {
+          const textDesc = document.getElementById('etq-desc').value;
+          payload = {
+            contents: [{
+              parts: [{ text: `Verifica si el etiquetado CLP descrito es conforme: "${textDesc}". Operario en turno: ${operator}. Lote/Partida Sage 200: ${lote}` }]
+            }]
+          };
+        }
+
+        const jsonResponse = await llamarGemini(payload);
+
+        state.lastEtiqueta = jsonResponse;
+        renderResultadosEtiqueta(jsonResponse, resultsDiv, operator, lote);
+        saveToHistorial('Verificación Etiqueta', jsonResponse.producto?.nombre_comercial || 'Etiqueta Analizada', operator, lote, jsonResponse);
+        showToast('Verificación CLP completada');
+
+      } catch (error) {
+        console.error(error);
+        resultsDiv.innerHTML = `<div class="card" style="border-left:4px solid var(--danger);">❌ Error de procesamiento: ${error.message}</div>`;
+        showToast('Error de verificación', 'err');
+      } finally {
+        btn.disabled = false;
+        updateActionButtonsState();
+      }
+    }
+
+    // ===== RENDERIZADO DINÁMICO - RESIDUOS =====
+    function renderResultadosQuimicos(data, container, operator, lote) {
+      const lerPeligroso = data.gestion_residuos.peligroso ? `<span style="color:var(--danger); font-weight:800;">[RESIDUO PELIGROSO *]</span>` : `<span style="color:var(--success);">[Residuo No Peligroso]</span>`;
+      
+      container.innerHTML = `
+        <div class="card" style="border-left: 4px solid ${data.gestion_residuos.peligroso ? 'var(--danger)' : 'var(--success)'};">
+          <div class="card-title">Identificación LER (Lista Europea de Residuos)</div>
+          <div style="font-size: 18px; font-weight: 900; font-family: monospace; margin-bottom:6px;">
+            Código LER: ${data.gestion_residuos.codigo_ler} <br>${lerPeligroso}
+          </div>
+          <p style="font-size:14px; color:#4a5568; margin-top:6px;">${data.gestion_residuos.descripcion_ler}</p>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Clasificación CLP (Reglamento CE 1272/2008)</div>
+          <div style="font-weight:800; color:var(--primary); margin-bottom:8px;">
+            Palabra de Advertencia: ${data.clp.palabra_advertencia}
+          </div>
+          <div style="font-size:13px; color:var(--text-muted); margin-bottom:8px;">
+            Pictogramas: ${data.clp.pictogramas_codigo.join(', ')}
+          </div>
+          <div style="margin-bottom:8px;">
+            <strong>Indicaciones de Peligro:</strong>
+            <ul style="padding-left:20px; font-size:13px; margin-top:4px;">
+              ${data.clp.frases_h.map(h => `<li><strong>${h}</strong></li>`).join('')}
+            </ul>
+          </div>
+          <div>
+            <strong>Consejos de Prudencia:</strong>
+            <ul style="padding-left:20px; font-size:13px; margin-top:4px; color:var(--text-muted)">
+              ${data.clp.frases_p.map(p => `<li>${p}</li>`).join('')}
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="border-left: 4px solid var(--warning);">
+          <div class="card-title">Logística e Incompatibilidades (ADR / APQ)</div>
+          <div style="font-weight:700; font-size:14px; margin-bottom:6px;">Clasificación de Transporte: ${data.almacenamiento_adq_adr.clase_adr}</div>
+          <div style="font-size:13px; margin-bottom:6px;">
+            <strong>Incompatibilidades Críticas:</strong>
+            <ul style="padding-left:20px; color:var(--danger); margin-top:2px;">
+              ${data.almacenamiento_adq_adr.incompatibilidades_criticas.map(inc => `<li>${inc}</li>`).join('')}
+            </ul>
+          </div>
+          <p style="font-size:13px; background:#fffaf0; padding:8px; border-radius:8px; border:1px solid #feebc8; margin-top:8px;">
+            <strong>Confinamiento APQ:</strong> ${data.almacenamiento_adq_adr.medidas_confinamiento}
+          </p>
+        </div>
+
+        <button class="btn btn-secondary" onclick='generarPDF(state.lastResiduo, "Clasificación de Residuos", ${JSON.stringify(operator)}, ${JSON.stringify(lote)})'>
+          📄 Generar Informe PDF
+        </button>
+      `;
+    }
+
+    // ===== RENDERIZADO DINÁMICO - ETIQUETAS =====
+    function renderResultadosEtiqueta(data, container, operator, lote) {
+      const ver = data.verificacion_etiqueta || { conforme: true, deficiencias_detectadas: [] };
+      const conformeBadge = ver.conforme
+        ? `<span style="color:var(--success); font-weight:800;">✔ ETIQUETADO CONFORME</span>`
+        : `<span style="color:var(--danger); font-weight:800;">✘ NO CONFORME · REQUIERE CORRECCIÓN</span>`;
+
+      container.innerHTML = `
+        <div class="card" style="border-left: 4px solid ${ver.conforme ? 'var(--success)' : 'var(--danger)'};">
+          <div class="card-title">Resultado de Verificación CLP</div>
+          <div style="font-size:16px; margin-bottom:8px;">${conformeBadge}</div>
+          <div style="font-size:14px; font-weight:700; margin-bottom:4px;">${data.producto?.nombre_comercial || 'Producto identificado'}</div>
+          ${
+            !ver.conforme
+              ? `<div style="margin-top:8px;">
+                  <strong style="color:var(--danger);">Deficiencias detectadas:</strong>
+                  <ul style="padding-left:20px; font-size:13px; margin-top:4px; color:var(--danger);">
+                    ${(ver.deficiencias_detectadas || []).map(d => `<li>${d}</li>`).join('')}
+                  </ul>
+                </div>`
+              : `<p style="font-size:13px; color:var(--text-muted); margin-top:4px;">La etiqueta cumple con los pictogramas, palabra de advertencia y frases H/P obligatorias para esta sustancia.</p>`
+          }
+        </div>
+
+        <div class="card">
+          <div class="card-title">Elementos CLP Esperados (Ref. CE 1272/2008)</div>
+          <div style="font-weight:800; color:var(--primary); margin-bottom:8px;">
+            Palabra de Advertencia: ${data.clp.palabra_advertencia}
+          </div>
+          <div style="font-size:13px; color:var(--text-muted); margin-bottom:8px;">
+            Pictogramas obligatorios: ${data.clp.pictogramas_codigo.join(', ')}
+          </div>
+          <div style="margin-bottom:8px;">
+            <strong>Frases H:</strong>
+            <ul style="padding-left:20px; font-size:13px; margin-top:4px;">
+              ${data.clp.frases_h.map(h => `<li><strong>${h}</strong></li>`).join('')}
+            </ul>
+          </div>
+          <div>
+            <strong>Frases P:</strong>
+            <ul style="padding-left:20px; font-size:13px; margin-top:4px; color:var(--text-muted)">
+              ${data.clp.frases_p.map(p => `<li>${p}</li>`).join('')}
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="border-left: 4px solid var(--warning);">
+          <div class="card-title">Notas de Almacenamiento Asociadas</div>
+          <p style="font-size:13px; background:#fffaf0; padding:8px; border-radius:8px; border:1px solid #feebc8;">
+            <strong>Clase ADR:</strong> ${data.almacenamiento_adq_adr.clase_adr}<br><br>
+            <strong>Confinamiento APQ:</strong> ${data.almacenamiento_adq_adr.medidas_confinamiento}
+          </p>
+        </div>
+
+        <button class="btn btn-secondary" onclick='generarPDF(state.lastEtiqueta, "Verificación de Etiquetado", ${JSON.stringify(operator)}, ${JSON.stringify(lote)})'>
+          📄 Generar Informe PDF
+        </button>
+      `;
+    }
+
+    // ===== GENERACIÓN DE INFORMES PDF (trazabilidad FDS / Sage 200) =====
+    function generarPDF(data, tipoAnalisis, operario, lote) {
+      if (!data) {
+        showToast('No hay datos de análisis para exportar', 'err');
+        return;
+      }
+      if (!window.jspdf || !window.jspdf.jsPDF) {
+        showToast('No se pudo cargar el motor de PDF', 'err');
+        return;
+      }
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      const fecha = new Date().toLocaleString('es-ES', { timeZone: 'Europe/Madrid' });
+
+      doc.setFontSize(16);
+      doc.setTextColor(0, 86, 167);
+      doc.text('OLLEARIS · INFORME DE CUMPLIMIENTO QUÍMICO', 14, 16);
+
+      doc.setFontSize(10);
+      doc.setTextColor(80, 80, 80);
+      doc.text(`Tipo de análisis: ${tipoAnalisis}`, 14, 24);
+      doc.text(`Fecha: ${fecha}`, 14, 29);
+      doc.text(`Operario: ${operario || 'No especificado'}`, 14, 34);
+      doc.text(`Lote / Partida (Sage 200): ${lote || 'Sin asignar'}`, 14, 39);
+
+      let cursorY = 46;
+
+      doc.autoTable({
+        startY: cursorY,
+        head: [['Producto', 'Componentes activos']],
+        body: [[
+          data.producto?.nombre_comercial || '-',
+          (data.producto?.componentes_activos || []).join(', ') || '-'
+        ]],
+        styles: { fontSize: 9 },
+        headStyles: { fillColor: [0, 86, 167] }
+      });
+      cursorY = doc.lastAutoTable.finalY + 6;
+
+      doc.autoTable({
+        startY: cursorY,
+        head: [['CLP - Reglamento CE 1272/2008', '']],
+        body: [
+          ['Palabra de advertencia', data.clp?.palabra_advertencia || '-'],
+          ['Pictogramas', (data.clp?.pictogramas_codigo || []).join(', ') || '-'],
+          ['Frases H', (data.clp?.frases_h || []).join(', ') || '-'],
+          ['Frases P', (data.clp?.frases_p || []).join(', ') || '-']
+        ],
+        styles: { fontSize: 9 },
+        headStyles: { fillColor: [0, 86, 167] }
+      });
+      cursorY = doc.lastAutoTable.finalY + 6;
+
+      doc.autoTable({
+        startY: cursorY,
+        head: [['Gestión de Residuos (LER)', '']],
+        body: [
+          ['Código LER', data.gestion_residuos?.codigo_ler || '-'],
+          ['Peligroso', data.gestion_residuos?.peligroso ? 'SÍ (*)' : 'NO'],
+          ['Descripción LER', data.gestion_residuos?.descripcion_ler || '-']
+        ],
+        styles: { fontSize: 9 },
+        headStyles: { fillColor: [0, 86, 167] }
+      });
+      cursorY = doc.lastAutoTable.finalY + 6;
+
+      doc.autoTable({
+        startY: cursorY,
+        head: [['Logística ADR / APQ', '']],
+        body: [
+          ['Clase ADR', data.almacenamiento_adq_adr?.clase_adr || '-'],
+          ['Incompatibilidades críticas', (data.almacenamiento_adq_adr?.incompatibilidades_criticas || []).join(' | ') || '-'],
+          ['Medidas de confinamiento APQ', data.almacenamiento_adq_adr?.medidas_confinamiento || '-']
+        ],
+        styles: { fontSize: 9 },
+        headStyles: { fillColor: [0, 86, 167] }
+      });
+      cursorY = doc.lastAutoTable.finalY + 6;
+
+      const ver = data.verificacion_etiqueta || { conforme: true, deficiencias_detectadas: [] };
+      doc.autoTable({
+        startY: cursorY,
+        head: [['Verificación de Etiquetado CLP', '']],
+        body: [
+          ['Conforme', ver.conforme ? 'SÍ' : 'NO'],
+          ['Deficiencias detectadas', (ver.deficiencias_detectadas || []).join(' | ') || '—']
+        ],
+        styles: { fontSize: 9 },
+        headStyles: { fillColor: [0, 86, 167] }
+      });
+
+      const nombreLimpio = (data.producto?.nombre_comercial || 'analisis').replace(/[^a-z0-9]+/gi, '_').toLowerCase();
+      doc.save(`Ollearis_${nombreLimpio}_${Date.now()}.pdf`);
+      showToast('Informe PDF generado');
+    }
+
+    // ===== HISTORIAL LOCAL =====
+    function renderHistorial() {
+      const listContainer = document.getElementById('historial-list');
+      if (state.historial.length === 0) {
+        listContainer.innerHTML = '<div class="card" style="text-align:center; color:var(--text-muted)">No hay registros guardados localmente.</div>';
+        return;
+      }
+      listContainer.innerHTML = state.historial.map((item, index) => `
+        <div class="card">
+          <div class="card-title">${item.tipo} - ${item.fecha}</div>
+          <div style="font-weight:700; margin-bottom:4px;">${item.titulo}</div>
+          <div style="font-size:13px; color:var(--text-muted); margin-bottom:8px;">
+            Operario: ${item.operario || 'Sin especificar'} · Lote/Partida: ${item.lote || 'Sin asignar'}
+          </div>
+          <button class="btn btn-secondary" style="margin-bottom:0;" onclick="generarPDF(state.historial[${index}].data, ${JSON.stringify(item.tipo)}, ${JSON.stringify(item.operario)}, ${JSON.stringify(item.lote)})">
+            📄 Exportar PDF
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function saveToHistorial(tipo, titulo, operario, lote, data) {
+      const nuevoItem = {
+        tipo: tipo,
+        titulo: titulo,
+        operario: operario,
+        lote: lote,
+        fecha: new Date().toLocaleString('es-ES', { timeZone: 'Europe/Madrid' }),
+        data: data
+      };
+      state.historial.unshift(nuevoItem);
+      // Limitar el historial local para no agotar la cuota de localStorage
+      if (state.historial.length > 50) state.historial = state.historial.slice(0, 50);
+      try {
+        localStorage.setItem('gq_historial', JSON.stringify(state.historial));
+      } catch (e) {
+        console.warn('No se pudo guardar el historial completo en localStorage', e);
+      }
+      renderHistorial();
+    }
+
+    function clearHistorial() {
+      if(confirm('¿Confirmas que deseas borrar todo el registro local de la aplicación?')) {
+        state.historial = [];
+        localStorage.removeItem('gq_historial');
+        renderHistorial();
+        showToast('Historial limpio con éxito');
+      }
+    }
+  </script>
+</body>
+</html>
+```
