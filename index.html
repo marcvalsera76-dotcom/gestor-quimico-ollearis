@@ -1,3 +1,16 @@
+Buena pista — significa que el selector de archivos SÍ funciona ahora (gracias al despliegue HTTPS), pero la app no está procesando la imagen tras seleccionarla. Voy a hacer el código más robusto (vista previa instantánea + mensajes de diagnóstico) para detectar exactamente dónde se atasca.
+
+He mejorado el manejo de imágenes: ahora la vista previa se muestra al instante (sin depender de FileReader) y verás mensajes (toasts) en cada paso, para saber exactamente dónde falla si sigue habiendo problemas.
+
+Repite el proceso que ya conoces:
+
+1. Ve a `github.com/marcvalsera76-dotcom/gestor-quimico-ollearis` → toca `index.html` → icono lápiz (✏️ Edit).
+2. Selecciona todo el contenido → bórralo → pega el código de abajo completo.
+3. Commit changes.
+4. Espera ~1 min (GitHub Pages se actualiza solo) y recarga la app en el móvil (puede que necesites cerrar y reabrir la pestaña, o hacer "recargar sin caché").
+5. Prueba "Galería" de nuevo y dime qué mensajes (toasts) aparecen ahora arriba de la pantalla.
+
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -980,3 +993,4 @@ Reglas operativas estrictas:
   </script>
 </body>
 </html>
+```
