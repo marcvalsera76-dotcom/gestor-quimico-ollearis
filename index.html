@@ -414,4 +414,569 @@ Reglas operativas estrictas:
         document.getElementById('apiKey').value = savedKey;
         showKeyStatus(true);
       }
-      const savedOperator = localSt
+      const savedOperator = localStorage.getItem('gq_operator') || '';
+      if (savedOperator) {
+        document.getElementById('operator').value = savedOperator;
+      }
+      renderHistorial();
+    });
+
+    // ===== GESTIÓN DE CREDENCIALES AUTOMÁTICA =====
+    function autoSaveApiKey() {
+      const keyInput = document.getElementById('apiKey').value.trim();
+      if (keyInput.length > 10) {
+        localStorage.setItem('gq_apikey', keyInput);
+        showKeyStatus(true);
+      } else {
+        showKeyStatus(false);
+      }
+    }
+
+    function showKeyStatus(isConfigured) {
+      const statusLabel = document.getElementById('keyStatus');
+      statusLabel.textContent = isConfigured ? '✓ Clave API Configurada' : '✗ Clave requerida';
+      statusLabel.style.color = isConfigured ? 'var(--success)' : 'var(--danger)';
+      updateActionButtonsState();
+    }
+
+    function saveOperator() {
+      const operatorValue = document.getElementById('operator').value;
+      localStorage.setItem('gq_operator', operatorValue);
+      showToast(`Operario asignado: ${operatorValue || 'Ninguno'}`);
+    }
+
+    // ===== NAVEGACIÓN =====
+    function switchTab(targetTab) {
+      state.currentTab = targetTab;
+      ['residuos', 'etiqueta', 'historial'].forEach(tabName => {
+        document.getElementById('tab-' + tabName).classList.toggle('hidden', tabName !== targetTab);
+        document.getElementById('nav-' + tabName).classList.toggle('on', tabName === targetTab);
+      });
+      if (targetTab === 'historial') renderHistorial();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ===== MANEJO DE IMÁGENES =====
+    function handleImage(inputElement, modulePrefix) {
+      const file = inputElement.files && inputElement.files[0];
+      if (!file) {
+        showToast('No se seleccionó ningún archivo', 'err');
+        return;
+      }
+
+      showToast('Archivo recibido: ' + (file.name || 'imagen'), 'ok', 2000);
+
+      if (!file.type || !file.type.startsWith('image/')) {
+        showToast('El archivo seleccionado no es una imagen (' + (file.type || 'tipo desconocido') + ')', 'err');
+        inputElement.value = '';
+        return;
+      }
+
+      const previewElement = document.getElementById(`${modulePrefix}-preview`);
+      const uploadArea = document.getElementById(`${modulePrefix}-upload-area`);
+
+      // Vista previa inmediata mediante Object URL (no depende de FileReader)
+      try {
+        const objectUrl = URL.createObjectURL(file);
+        previewElement.src = objectUrl;
+        uploadArea.classList.add('has-image');
+      } catch (err) {
+        console.error('Object URL error', err);
+        showToast('No se pudo mostrar la vista previa: ' + err.message, 'err');
+      }
+
+      const reader = new FileReader();
+
+      reader.onerror = function() {
+        console.error('FileReader error', reader.error);
+        showToast('No se pudo preparar la imagen para el análisis (FileReader)', 'err');
+      };
+
+      reader.onload = function(e) {
+        state.images[modulePrefix] = e.target.result;
+        showToast('Imagen lista para analizar');
+        updateActionButtonsState();
+      };
+
+      try {
+        reader.readAsDataURL(file);
+      } catch (err) {
+        console.error(err);
+        showToast('Error al leer la imagen: ' + err.message, 'err');
+      } finally {
+        // Permite volver a seleccionar el mismo archivo si se repite la operación
+        inputElement.value = '';
+      }
+    }
+
+    // Abre el selector de galería al tocar el área de previsualización
+    function triggerGalleryPicker(modulePrefix) {
+      const galleryInput = document.getElementById(`${modulePrefix}-gallery`);
+      if (galleryInput) galleryInput.click();
+    }
+
+    // ===== MODOS DE TRABAJO =====
+    function setResMode(mode) {
+      state.modes.res = mode;
+      document.getElementById('mode-res-foto').classList.toggle('on', mode === 'foto');
+      document.getElementById('mode-res-texto').classList.toggle('on', mode === 'texto');
+      document.getElementById('res-foto-panel').classList.toggle('hidden', mode !== 'foto');
+      document.getElementById('res-texto-panel').classList.toggle('hidden', mode !== 'texto');
+      updateActionButtonsState();
+    }
+
+    function setEtqMode(mode) {
+      state.modes.etq = mode;
+      document.getElementById('mode-etq-foto').classList.toggle('on', mode === 'foto');
+      document.getElementById('mode-etq-texto').classList.toggle('on', mode === 'texto');
+      document.getElementById('etq-foto-panel').classList.toggle('hidden', mode !== 'foto');
+      document.getElementById('etq-texto-panel').classList.toggle('hidden', mode !== 'texto');
+      updateActionButtonsState();
+    }
+
+    function checkResText() { updateActionButtonsState(); }
+    function checkEtqText() { updateActionButtonsState(); }
+
+    function updateExportToggle() {
+      const toggle = document.getElementById('export-toggle').checked;
+      document.getElementById('export-sub').textContent = toggle ? 
+        'Logística comunitaria internacional GHS/ADR 2026' : 'Gestión interna · Ámbito nacional español';
+    }
+
+    function updateActionButtonsState() {
+      const hasApiKey = (localStorage.getItem('gq_apikey') || '').length > 10;
+      const isResValid = state.modes.res === 'foto' ? !!state.images.res : document.getElementById('res-desc').value.trim().length > 5;
+      document.getElementById('btn-clasificar').disabled = !(hasApiKey && isResValid);
+      const isEtqValid = state.modes.etq === 'foto' ? !!state.images.etq : document.getElementById('etq-desc').value.trim().length > 5;
+      document.getElementById('btn-verificar').disabled = !(hasApiKey && isEtqValid);
+    }
+
+    function showToast(message, type = 'ok', duration = 3000) {
+      const toastElement = document.getElementById('toast');
+      toastElement.textContent = message;
+      toastElement.className = `toast ${type === 'ok' ? 'ok' : 'err'}`;
+      requestAnimationFrame(() => toastElement.classList.add('show'));
+      setTimeout(() => toastElement.classList.remove('show'), duration);
+    }
+
+    // ===== LLAMADA GENÉRICA A GEMINI =====
+    async function llamarGemini(payload) {
+      const apiKey = localStorage.getItem('gq_apikey');
+      if (!apiKey) throw new Error('Falta la clave API de Gemini');
+
+      const response = await fetch(GEMINI_URL(apiKey), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...payload,
+          systemInstruction: { parts: [{ text: systemInstruction }] },
+          generationConfig: {
+            responseMimeType: "application/json",
+            temperature: 0.1
+          }
+        })
+      });
+
+      if (!response.ok) {
+        let detalle = '';
+        try {
+          const errBody = await response.json();
+          detalle = errBody?.error?.message ? `: ${errBody.error.message}` : '';
+        } catch (e) {}
+        throw new Error(`Error en el servidor API (${response.status})${detalle}`);
+      }
+
+      const data = await response.json();
+      const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!rawText) throw new Error('La API no devolvió contenido analizable');
+
+      try {
+        return JSON.parse(rawText);
+      } catch (e) {
+        // Por si el modelo añade restos de markdown a pesar de la instrucción
+        const limpio = rawText.replace(/```json|```/g, '').trim();
+        return JSON.parse(limpio);
+      }
+    }
+
+    // ===== MÓDULO RESIDUOS =====
+    async function clasificarResiduo() {
+      const apiKey = localStorage.getItem('gq_apikey');
+      const operator = localStorage.getItem('gq_operator') || 'No especificado';
+      const lote = document.getElementById('res-lote').value.trim() || 'Sin asignar';
+      const isExport = document.getElementById('export-toggle').checked;
+      const resultsDiv = document.getElementById('res-results');
+      const btn = document.getElementById('btn-clasificar');
+
+      if (!apiKey) {
+        showToast('Falta la clave API de Gemini', 'err');
+        return;
+      }
+
+      btn.disabled = true;
+      resultsDiv.innerHTML = `<div class="card" style="text-align:center;">⏳ Procesando análisis normativo bajo CLP/ADR/LER...</div>`;
+
+      try {
+        let payload = {};
+
+        if (state.modes.res === 'foto' && state.images.res) {
+          const base64Parts = state.images.res.split(',');
+          const mimeType = base64Parts[0].match(/:(.*?);/)[1];
+          const base64Data = base64Parts[1];
+
+          payload = {
+            contents: [{
+              parts: [
+                { text: `Analiza este residuo industrial para su clasificación LER/CLP/ADR. Exportación Internacional activa: ${isExport}. Operario en turno: ${operator}. Lote/Partida Sage 200: ${lote}` },
+                { inlineData: { mimeType: mimeType, data: base64Data } }
+              ]
+            }]
+          };
+        } else {
+          const textDesc = document.getElementById('res-desc').value;
+          payload = {
+            contents: [{
+              parts: [{ text: `Analiza la descripción del residuo: "${textDesc}". Exportación Internacional activa: ${isExport}. Operario en turno: ${operator}. Lote/Partida Sage 200: ${lote}` }]
+            }]
+          };
+        }
+
+        const jsonResponse = await llamarGemini(payload);
+
+        state.lastResiduo = jsonResponse;
+        renderResultadosQuimicos(jsonResponse, resultsDiv, operator, lote);
+        saveToHistorial('Clasificación Residuos', jsonResponse.producto?.nombre_comercial || 'Residuo Analizado', operator, lote, jsonResponse);
+        showToast('Análisis normativo completado');
+
+      } catch (error) {
+        console.error(error);
+        resultsDiv.innerHTML = `<div class="card" style="border-left:4px solid var(--danger);">❌ Error de procesamiento: ${error.message}</div>`;
+        showToast('Error de análisis', 'err');
+      } finally {
+        btn.disabled = false;
+        updateActionButtonsState();
+      }
+    }
+
+    // ===== MÓDULO ETIQUETAS =====
+    async function verificarEtiqueta() {
+      const apiKey = localStorage.getItem('gq_apikey');
+      const operator = localStorage.getItem('gq_operator') || 'No especificado';
+      const lote = document.getElementById('etq-lote').value.trim() || 'Sin asignar';
+      const resultsDiv = document.getElementById('etq-results');
+      const btn = document.getElementById('btn-verificar');
+
+      if (!apiKey) {
+        showToast('Falta la clave API de Gemini', 'err');
+        return;
+      }
+
+      btn.disabled = true;
+      resultsDiv.innerHTML = `<div class="card" style="text-align:center;">⏳ Validando parámetros CLP/SGA del etiquetado...</div>`;
+
+      try {
+        let payload = {};
+
+        if (state.modes.etq === 'foto' && state.images.etq) {
+          const base64Parts = state.images.etq.split(',');
+          const mimeType = base64Parts[0].match(/:(.*?);/)[1];
+          const base64Data = base64Parts[1];
+
+          payload = {
+            contents: [{
+              parts: [
+                { text: `Verifica si el etiquetado CLP de esta imagen es conforme. Operario en turno: ${operator}. Lote/Partida Sage 200: ${lote}` },
+                { inlineData: { mimeType: mimeType, data: base64Data } }
+              ]
+            }]
+          };
+        } else {
+          const textDesc = document.getElementById('etq-desc').value;
+          payload = {
+            contents: [{
+              parts: [{ text: `Verifica si el etiquetado CLP descrito es conforme: "${textDesc}". Operario en turno: ${operator}. Lote/Partida Sage 200: ${lote}` }]
+            }]
+          };
+        }
+
+        const jsonResponse = await llamarGemini(payload);
+
+        state.lastEtiqueta = jsonResponse;
+        renderResultadosEtiqueta(jsonResponse, resultsDiv, operator, lote);
+        saveToHistorial('Verificación Etiqueta', jsonResponse.producto?.nombre_comercial || 'Etiqueta Analizada', operator, lote, jsonResponse);
+        showToast('Verificación CLP completada');
+
+      } catch (error) {
+        console.error(error);
+        resultsDiv.innerHTML = `<div class="card" style="border-left:4px solid var(--danger);">❌ Error de procesamiento: ${error.message}</div>`;
+        showToast('Error de verificación', 'err');
+      } finally {
+        btn.disabled = false;
+        updateActionButtonsState();
+      }
+    }
+
+    // ===== RENDERIZADO DINÁMICO - RESIDUOS =====
+    function renderResultadosQuimicos(data, container, operator, lote) {
+      const lerPeligroso = data.gestion_residuos.peligroso ? `<span style="color:var(--danger); font-weight:800;">[RESIDUO PELIGROSO *]</span>` : `<span style="color:var(--success);">[Residuo No Peligroso]</span>`;
+      
+      container.innerHTML = `
+        <div class="card" style="border-left: 4px solid ${data.gestion_residuos.peligroso ? 'var(--danger)' : 'var(--success)'};">
+          <div class="card-title">Identificación LER (Lista Europea de Residuos)</div>
+          <div style="font-size: 18px; font-weight: 900; font-family: monospace; margin-bottom:6px;">
+            Código LER: ${data.gestion_residuos.codigo_ler} <br>${lerPeligroso}
+          </div>
+          <p style="font-size:14px; color:#4a5568; margin-top:6px;">${data.gestion_residuos.descripcion_ler}</p>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Clasificación CLP (Reglamento CE 1272/2008)</div>
+          <div style="font-weight:800; color:var(--primary); margin-bottom:8px;">
+            Palabra de Advertencia: ${data.clp.palabra_advertencia}
+          </div>
+          <div style="font-size:13px; color:var(--text-muted); margin-bottom:8px;">
+            Pictogramas: ${data.clp.pictogramas_codigo.join(', ')}
+          </div>
+          <div style="margin-bottom:8px;">
+            <strong>Indicaciones de Peligro:</strong>
+            <ul style="padding-left:20px; font-size:13px; margin-top:4px;">
+              ${data.clp.frases_h.map(h => `<li><strong>${h}</strong></li>`).join('')}
+            </ul>
+          </div>
+          <div>
+            <strong>Consejos de Prudencia:</strong>
+            <ul style="padding-left:20px; font-size:13px; margin-top:4px; color:var(--text-muted)">
+              ${data.clp.frases_p.map(p => `<li>${p}</li>`).join('')}
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="border-left: 4px solid var(--warning);">
+          <div class="card-title">Logística e Incompatibilidades (ADR / APQ)</div>
+          <div style="font-weight:700; font-size:14px; margin-bottom:6px;">Clasificación de Transporte: ${data.almacenamiento_adq_adr.clase_adr}</div>
+          <div style="font-size:13px; margin-bottom:6px;">
+            <strong>Incompatibilidades Críticas:</strong>
+            <ul style="padding-left:20px; color:var(--danger); margin-top:2px;">
+              ${data.almacenamiento_adq_adr.incompatibilidades_criticas.map(inc => `<li>${inc}</li>`).join('')}
+            </ul>
+          </div>
+          <p style="font-size:13px; background:#fffaf0; padding:8px; border-radius:8px; border:1px solid #feebc8; margin-top:8px;">
+            <strong>Confinamiento APQ:</strong> ${data.almacenamiento_adq_adr.medidas_confinamiento}
+          </p>
+        </div>
+
+        <button class="btn btn-secondary" onclick='generarPDF(state.lastResiduo, "Clasificación de Residuos", ${JSON.stringify(operator)}, ${JSON.stringify(lote)})'>
+          📄 Generar Informe PDF
+        </button>
+      `;
+    }
+
+    // ===== RENDERIZADO DINÁMICO - ETIQUETAS =====
+    function renderResultadosEtiqueta(data, container, operator, lote) {
+      const ver = data.verificacion_etiqueta || { conforme: true, deficiencias_detectadas: [] };
+      const conformeBadge = ver.conforme
+        ? `<span style="color:var(--success); font-weight:800;">✔ ETIQUETADO CONFORME</span>`
+        : `<span style="color:var(--danger); font-weight:800;">✘ NO CONFORME · REQUIERE CORRECCIÓN</span>`;
+
+      container.innerHTML = `
+        <div class="card" style="border-left: 4px solid ${ver.conforme ? 'var(--success)' : 'var(--danger)'};">
+          <div class="card-title">Resultado de Verificación CLP</div>
+          <div style="font-size:16px; margin-bottom:8px;">${conformeBadge}</div>
+          <div style="font-size:14px; font-weight:700; margin-bottom:4px;">${data.producto?.nombre_comercial || 'Producto identificado'}</div>
+          ${
+            !ver.conforme
+              ? `<div style="margin-top:8px;">
+                  <strong style="color:var(--danger);">Deficiencias detectadas:</strong>
+                  <ul style="padding-left:20px; font-size:13px; margin-top:4px; color:var(--danger);">
+                    ${(ver.deficiencias_detectadas || []).map(d => `<li>${d}</li>`).join('')}
+                  </ul>
+                </div>`
+              : `<p style="font-size:13px; color:var(--text-muted); margin-top:4px;">La etiqueta cumple con los pictogramas, palabra de advertencia y frases H/P obligatorias para esta sustancia.</p>`
+          }
+        </div>
+
+        <div class="card">
+          <div class="card-title">Elementos CLP Esperados (Ref. CE 1272/2008)</div>
+          <div style="font-weight:800; color:var(--primary); margin-bottom:8px;">
+            Palabra de Advertencia: ${data.clp.palabra_advertencia}
+          </div>
+          <div style="font-size:13px; color:var(--text-muted); margin-bottom:8px;">
+            Pictogramas obligatorios: ${data.clp.pictogramas_codigo.join(', ')}
+          </div>
+          <div style="margin-bottom:8px;">
+            <strong>Frases H:</strong>
+            <ul style="padding-left:20px; font-size:13px; margin-top:4px;">
+              ${data.clp.frases_h.map(h => `<li><strong>${h}</strong></li>`).join('')}
+            </ul>
+          </div>
+          <div>
+            <strong>Frases P:</strong>
+            <ul style="padding-left:20px; font-size:13px; margin-top:4px; color:var(--text-muted)">
+              ${data.clp.frases_p.map(p => `<li>${p}</li>`).join('')}
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="border-left: 4px solid var(--warning);">
+          <div class="card-title">Notas de Almacenamiento Asociadas</div>
+          <p style="font-size:13px; background:#fffaf0; padding:8px; border-radius:8px; border:1px solid #feebc8;">
+            <strong>Clase ADR:</strong> ${data.almacenamiento_adq_adr.clase_adr}<br><br>
+            <strong>Confinamiento APQ:</strong> ${data.almacenamiento_adq_adr.medidas_confinamiento}
+          </p>
+        </div>
+
+        <button class="btn btn-secondary" onclick='generarPDF(state.lastEtiqueta, "Verificación de Etiquetado", ${JSON.stringify(operator)}, ${JSON.stringify(lote)})'>
+          📄 Generar Informe PDF
+        </button>
+      `;
+    }
+
+    // ===== GENERACIÓN DE INFORMES PDF (trazabilidad FDS / Sage 200) =====
+    function generarPDF(data, tipoAnalisis, operario, lote) {
+      if (!data) {
+        showToast('No hay datos de análisis para exportar', 'err');
+        return;
+      }
+      if (!window.jspdf || !window.jspdf.jsPDF) {
+        showToast('No se pudo cargar el motor de PDF', 'err');
+        return;
+      }
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      const fecha = new Date().toLocaleString('es-ES', { timeZone: 'Europe/Madrid' });
+
+      doc.setFontSize(16);
+      doc.setTextColor(0, 86, 167);
+      doc.text('OLLEARIS · INFORME DE CUMPLIMIENTO QUÍMICO', 14, 16);
+
+      doc.setFontSize(10);
+      doc.setTextColor(80, 80, 80);
+      doc.text(`Tipo de análisis: ${tipoAnalisis}`, 14, 24);
+      doc.text(`Fecha: ${fecha}`, 14, 29);
+      doc.text(`Operario: ${operario || 'No especificado'}`, 14, 34);
+      doc.text(`Lote / Partida (Sage 200): ${lote || 'Sin asignar'}`, 14, 39);
+
+      let cursorY = 46;
+
+      doc.autoTable({
+        startY: cursorY,
+        head: [['Producto', 'Componentes activos']],
+        body: [[
+          data.producto?.nombre_comercial || '-',
+          (data.producto?.componentes_activos || []).join(', ') || '-'
+        ]],
+        styles: { fontSize: 9 },
+        headStyles: { fillColor: [0, 86, 167] }
+      });
+      cursorY = doc.lastAutoTable.finalY + 6;
+
+      doc.autoTable({
+        startY: cursorY,
+        head: [['CLP - Reglamento CE 1272/2008', '']],
+        body: [
+          ['Palabra de advertencia', data.clp?.palabra_advertencia || '-'],
+          ['Pictogramas', (data.clp?.pictogramas_codigo || []).join(', ') || '-'],
+          ['Frases H', (data.clp?.frases_h || []).join(', ') || '-'],
+          ['Frases P', (data.clp?.frases_p || []).join(', ') || '-']
+        ],
+        styles: { fontSize: 9 },
+        headStyles: { fillColor: [0, 86, 167] }
+      });
+      cursorY = doc.lastAutoTable.finalY + 6;
+
+      doc.autoTable({
+        startY: cursorY,
+        head: [['Gestión de Residuos (LER)', '']],
+        body: [
+          ['Código LER', data.gestion_residuos?.codigo_ler || '-'],
+          ['Peligroso', data.gestion_residuos?.peligroso ? 'SÍ (*)' : 'NO'],
+          ['Descripción LER', data.gestion_residuos?.descripcion_ler || '-']
+        ],
+        styles: { fontSize: 9 },
+        headStyles: { fillColor: [0, 86, 167] }
+      });
+      cursorY = doc.lastAutoTable.finalY + 6;
+
+      doc.autoTable({
+        startY: cursorY,
+        head: [['Logística ADR / APQ', '']],
+        body: [
+          ['Clase ADR', data.almacenamiento_adq_adr?.clase_adr || '-'],
+          ['Incompatibilidades críticas', (data.almacenamiento_adq_adr?.incompatibilidades_criticas || []).join(' | ') || '-'],
+          ['Medidas de confinamiento APQ', data.almacenamiento_adq_adr?.medidas_confinamiento || '-']
+        ],
+        styles: { fontSize: 9 },
+        headStyles: { fillColor: [0, 86, 167] }
+      });
+      cursorY = doc.lastAutoTable.finalY + 6;
+
+      const ver = data.verificacion_etiqueta || { conforme: true, deficiencias_detectadas: [] };
+      doc.autoTable({
+        startY: cursorY,
+        head: [['Verificación de Etiquetado CLP', '']],
+        body: [
+          ['Conforme', ver.conforme ? 'SÍ' : 'NO'],
+          ['Deficiencias detectadas', (ver.deficiencias_detectadas || []).join(' | ') || '—']
+        ],
+        styles: { fontSize: 9 },
+        headStyles: { fillColor: [0, 86, 167] }
+      });
+
+      const nombreLimpio = (data.producto?.nombre_comercial || 'analisis').replace(/[^a-z0-9]+/gi, '_').toLowerCase();
+      doc.save(`Ollearis_${nombreLimpio}_${Date.now()}.pdf`);
+      showToast('Informe PDF generado');
+    }
+
+    // ===== HISTORIAL LOCAL =====
+    function renderHistorial() {
+      const listContainer = document.getElementById('historial-list');
+      if (state.historial.length === 0) {
+        listContainer.innerHTML = '<div class="card" style="text-align:center; color:var(--text-muted)">No hay registros guardados localmente.</div>';
+        return;
+      }
+      listContainer.innerHTML = state.historial.map((item, index) => `
+        <div class="card">
+          <div class="card-title">${item.tipo} - ${item.fecha}</div>
+          <div style="font-weight:700; margin-bottom:4px;">${item.titulo}</div>
+          <div style="font-size:13px; color:var(--text-muted); margin-bottom:8px;">
+            Operario: ${item.operario || 'Sin especificar'} · Lote/Partida: ${item.lote || 'Sin asignar'}
+          </div>
+          <button class="btn btn-secondary" style="margin-bottom:0;" onclick="generarPDF(state.historial[${index}].data, ${JSON.stringify(item.tipo)}, ${JSON.stringify(item.operario)}, ${JSON.stringify(item.lote)})">
+            📄 Exportar PDF
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function saveToHistorial(tipo, titulo, operario, lote, data) {
+      const nuevoItem = {
+        tipo: tipo,
+        titulo: titulo,
+        operario: operario,
+        lote: lote,
+        fecha: new Date().toLocaleString('es-ES', { timeZone: 'Europe/Madrid' }),
+        data: data
+      };
+      state.historial.unshift(nuevoItem);
+      // Limitar el historial local para no agotar la cuota de localStorage
+      if (state.historial.length > 50) state.historial = state.historial.slice(0, 50);
+      try {
+        localStorage.setItem('gq_historial', JSON.stringify(state.historial));
+      } catch (e) {
+        console.warn('No se pudo guardar el historial completo en localStorage', e);
+      }
+      renderHistorial();
+    }
+
+    function clearHistorial() {
+      if(confirm('¿Confirmas que deseas borrar todo el registro local de la aplicación?')) {
+        state.historial = [];
+        localStorage.removeItem('gq_historial');
+        renderHistorial();
+        showToast('Historial limpio con éxito');
+      }
+    }
+  </script>
+</body>
+</html>
