@@ -456,15 +456,56 @@ Reglas operativas estrictas:
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    // ===== COMPRESIÓN DE IMÁGENES (reduce tamaño antes de enviarlas a la API) =====
+    function compressImage(file, maxDimension = 1600, quality = 0.85) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        const objectUrl = URL.createObjectURL(file);
+
+        img.onload = () => {
+          let { width, height } = img;
+
+          if (width > maxDimension || height > maxDimension) {
+            if (width > height) {
+              height = Math.round(height * (maxDimension / width));
+              width = maxDimension;
+            } else {
+              width = Math.round(width * (maxDimension / height));
+              height = maxDimension;
+            }
+          }
+
+          try {
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            URL.revokeObjectURL(objectUrl);
+            const dataUrl = canvas.toDataURL('image/jpeg', quality);
+            resolve(dataUrl);
+          } catch (err) {
+            URL.revokeObjectURL(objectUrl);
+            reject(err);
+          }
+        };
+
+        img.onerror = () => {
+          URL.revokeObjectURL(objectUrl);
+          reject(new Error('No se pudo cargar la imagen para comprimirla'));
+        };
+
+        img.src = objectUrl;
+      });
+    }
+
     // ===== MANEJO DE IMÁGENES =====
-    function handleImage(inputElement, modulePrefix) {
+    async function handleImage(inputElement, modulePrefix) {
       const file = inputElement.files && inputElement.files[0];
       if (!file) {
         showToast('No se seleccionó ningún archivo', 'err');
         return;
       }
-
-      showToast('Archivo recibido: ' + (file.name || 'imagen'), 'ok', 2000);
 
       if (!file.type || !file.type.startsWith('image/')) {
         showToast('El archivo seleccionado no es una imagen (' + (file.type || 'tipo desconocido') + ')', 'err');
@@ -475,34 +516,24 @@ Reglas operativas estrictas:
       const previewElement = document.getElementById(`${modulePrefix}-preview`);
       const uploadArea = document.getElementById(`${modulePrefix}-upload-area`);
 
-      // Vista previa inmediata mediante Object URL (no depende de FileReader)
+      showToast('Procesando imagen...', 'ok', 2000);
+
       try {
-        const objectUrl = URL.createObjectURL(file);
-        previewElement.src = objectUrl;
+        const originalSizeKB = Math.round(file.size / 1024);
+        const compressedDataUrl = await compressImage(file);
+        // Tamaño aproximado en KB del base64 resultante (sin contar el encabezado data:)
+        const base64Length = compressedDataUrl.length - compressedDataUrl.indexOf(',') - 1;
+        const compressedSizeKB = Math.round((base64Length * 0.75) / 1024);
+
+        state.images[modulePrefix] = compressedDataUrl;
+        previewElement.src = compressedDataUrl;
         uploadArea.classList.add('has-image');
-      } catch (err) {
-        console.error('Object URL error', err);
-        showToast('No se pudo mostrar la vista previa: ' + err.message, 'err');
-      }
 
-      const reader = new FileReader();
-
-      reader.onerror = function() {
-        console.error('FileReader error', reader.error);
-        showToast('No se pudo preparar la imagen para el análisis (FileReader)', 'err');
-      };
-
-      reader.onload = function(e) {
-        state.images[modulePrefix] = e.target.result;
-        showToast('Imagen lista para analizar');
+        showToast(`Imagen lista (${originalSizeKB}KB → ~${compressedSizeKB}KB)`);
         updateActionButtonsState();
-      };
-
-      try {
-        reader.readAsDataURL(file);
       } catch (err) {
-        console.error(err);
-        showToast('Error al leer la imagen: ' + err.message, 'err');
+        console.error('Error al procesar la imagen', err);
+        showToast('No se pudo procesar la imagen: ' + err.message, 'err');
       } finally {
         // Permite volver a seleccionar el mismo archivo si se repite la operación
         inputElement.value = '';
