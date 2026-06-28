@@ -7,14 +7,13 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Gestor Químico Ollearis</title>
-  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
-  
   <style>
     :root {
       --primary: #1B3A6B;
       --primary-dark: #0F2447;
+      --gold: #D4AF37;
       --bg-app: #f0f4f8;
       --surface: #ffffff;
       --text-main: #1a1a2e;
@@ -24,170 +23,74 @@
       --danger: #ff3d00;
       --warning: #ff9100;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     html { scroll-behavior: smooth; height: 100%; }
-    
-    body { 
-      background: var(--bg-app); 
-      color: var(--text-main); 
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-      padding: 0 0 100px; 
-      line-height: 1.5; 
-      min-height: 100dvh; 
-      -webkit-font-smoothing: antialiased; 
-    }
-
-    /* ===== HEADER ===== */
-    .header { 
-      background: var(--primary); 
-      padding: 20px 16px 24px; 
-      color: #fff; 
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
+    body { background: var(--bg-app); color: var(--text-main); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; padding: 0 0 100px; line-height: 1.5; min-height: 100dvh; -webkit-font-smoothing: antialiased; }
+    .header { background: var(--primary); padding: 20px 16px 24px; color: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
     .header-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
     .header-brand { display: flex; align-items: center; gap: 12px; }
-    .logo { 
-      width: 46px; height: 46px; background: #fff; border-radius: 12px; 
-      display: flex; align-items: center; justify-content: center; 
-      font-size: 24px; font-weight: 900; color: var(--primary); flex-shrink: 0; 
-    }
+    .logo { width: 46px; height: 46px; background: #fff; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 900; color: var(--primary); flex-shrink: 0; }
     .header-titles h1 { font-size: 22px; font-weight: 900; letter-spacing: 0.5px; line-height: 1.1; }
     .header-titles p { font-size: 11px; color: rgba(255,255,255,0.8); margin-top: 3px; font-weight: 600; }
-    
     .operator-box { background: rgba(255,255,255,0.18); border-radius: 12px; padding: 6px 12px; text-align: center; }
     .operator-box label { display: block; font-size: 9px; color: rgba(255,255,255,0.8); text-transform: uppercase; font-weight: 700; margin-bottom: 2px; }
-    .operator-box select { 
-      background: transparent; border: none; color: #fff; font-size: 14px; font-weight: 700; 
-      outline: none; cursor: pointer; -webkit-appearance: none; text-align: center; margin-bottom: 0; padding: 2px 8px;
-    }
+    .operator-box select { background: transparent; border: none; color: #fff; font-size: 14px; font-weight: 700; outline: none; cursor: pointer; -webkit-appearance: none; text-align: center; margin-bottom: 0; padding: 2px 8px; }
     .operator-box select option { color: var(--text-main); }
-
-    /* ===== CONTENT ===== */
     .content { padding: 16px; max-width: 600px; margin: 0 auto; }
     .section-title { font-size: 22px; font-weight: 800; color: var(--primary); margin: 8px 0 16px; }
-
-    /* ===== CARDS ===== */
     .card { background: var(--surface); border-radius: 16px; padding: 18px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
     .card-title { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 12px; }
-
-    /* ===== FORM INPUTS ===== */
-    input[type=text], input[type=password], textarea, select {
-      width: 100%; background: #f8f9fa; border: 1.5px solid var(--border); border-radius: 12px; 
-      color: var(--text-main); padding: 14px 16px; font-size: 16px; outline: none; 
-      transition: all 0.2s ease; -webkit-appearance: none; margin-bottom: 12px;
-    }
+    input[type=text], input[type=password], textarea, select { width: 100%; background: #f8f9fa; border: 1.5px solid var(--border); border-radius: 12px; color: var(--text-main); padding: 14px 16px; font-size: 16px; outline: none; transition: all 0.2s ease; -webkit-appearance: none; margin-bottom: 12px; }
     input:focus, textarea:focus, select:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 3px rgba(27,58,107,0.15); }
     textarea { min-height: 120px; resize: vertical; font-family: inherit; }
-
-    /* ===== BUTTONS ===== */
-    .btn { 
-      width: 100%; min-height: 54px; border: none; border-radius: 14px; font-size: 16px; font-weight: 800; 
-      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; 
-      transition: all 0.2s ease; touch-action: manipulation; margin-bottom: 12px;
-    }
+    .btn { width: 100%; min-height: 54px; border: none; border-radius: 14px; font-size: 16px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s ease; touch-action: manipulation; margin-bottom: 12px; }
     .btn:active { transform: scale(0.98); }
     .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     .btn-primary { background: var(--primary); color: #fff; box-shadow: 0 4px 12px rgba(27,58,107,0.2); }
     .btn-primary:active:not(:disabled) { background: var(--primary-dark); }
     .btn-secondary { background: #e2e8f0; color: var(--primary); }
     .btn-danger { background: var(--danger); color: #fff; }
-
-    /* ===== MODE SELECTOR ===== */
     .mode-sel { display: flex; gap: 8px; margin-bottom: 16px; background: #e2e8f0; padding: 4px; border-radius: 14px; }
-    .mode-btn { 
-      flex: 1; padding: 12px; background: transparent; border: none; border-radius: 10px; 
-      color: var(--text-muted); font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; 
-    }
+    .mode-btn { flex: 1; padding: 12px; background: transparent; border: none; border-radius: 10px; color: var(--text-muted); font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
     .mode-btn.on { background: var(--surface); color: var(--primary); box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
-
-    /* ===== UPLOAD AREA ===== */
-    .upload-area { 
-      background: #f8f9fa; border: 2px dashed #cbd5e0; border-radius: 16px; 
-      padding: 32px 20px; text-align: center; margin-bottom: 16px; position: relative; cursor: pointer;
-    }
+    .upload-area { background: #f8f9fa; border: 2px dashed #cbd5e0; border-radius: 16px; padding: 32px 20px; text-align: center; margin-bottom: 16px; position: relative; cursor: pointer; }
     .upload-area.has-image { border-color: var(--success); border-style: solid; background: rgba(0,200,83,0.02); }
     .upload-icon { font-size: 40px; margin-bottom: 10px; }
     .upload-title { font-size: 15px; font-weight: 700; color: #4a5568; margin-bottom: 4px; }
     .upload-sub { font-size: 12px; color: var(--text-muted); }
     .upload-preview { width: 100%; max-height: 220px; object-fit: contain; border-radius: 12px; display: none; }
-    
-    .upload-area.has-image .upload-icon, 
-    .upload-area.has-image .upload-title, 
-    .upload-area.has-image .upload-sub { display: none; }
+    .upload-area.has-image .upload-icon, .upload-area.has-image .upload-title, .upload-area.has-image .upload-sub { display: none; }
     .upload-area.has-image .upload-preview { display: block; }
-
-    /* ===== CAMERA GRID ===== */
     .cam-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-    .cam-btn { 
-      position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; 
-      background: var(--surface); border: 1.5px solid var(--border); border-radius: 14px; padding: 16px; 
-      cursor: pointer; transition: all 0.2s; min-height: 90px; box-shadow: 0 2px 6px rgba(0,0,0,0.02);
-    }
+    .cam-btn { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; background: var(--surface); border: 1.5px solid var(--border); border-radius: 14px; padding: 16px; cursor: pointer; transition: all 0.2s; min-height: 90px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
     .cam-btn:active { background: #edf2f7; }
     .cam-btn input[type=file] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 10; }
     .cam-btn .icon { font-size: 26px; }
     .cam-btn .txt { font-size: 13px; font-weight: 700; color: #4a5568; }
-
-    /* ===== TOGGLE ROW ===== */
-    .toggle-row { 
-      display: flex; justify-content: space-between; align-items: center; 
-      background: var(--surface); border-radius: 14px; padding: 16px; margin-bottom: 16px; 
-      box-shadow: 0 4px 12px rgba(0,0,0,0.02); 
-    }
+    .toggle-row { display: flex; justify-content: space-between; align-items: center; background: var(--surface); border-radius: 14px; padding: 16px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
     .toggle-text { font-size: 14px; font-weight: 700; color: var(--text-main); }
     .toggle-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-    
     .switch { position: relative; width: 52px; height: 28px; flex-shrink: 0; }
     .switch input { opacity: 0; width: 0; height: 0; }
     .slider { position: absolute; inset: 0; background: #cbd5e0; border-radius: 28px; cursor: pointer; transition: .2s; }
-    .slider:before { 
-      content: ""; position: absolute; width: 22px; height: 22px; left: 3px; top: 3px; 
-      background: #fff; border-radius: 50%; transition: .2s; box-shadow: 0 1px 4px rgba(0,0,0,0.2); 
-    }
+    .slider:before { content: ""; position: absolute; width: 22px; height: 22px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: .2s; box-shadow: 0 1px 4px rgba(0,0,0,0.2); }
     input:checked + .slider { background: var(--primary); }
     input:checked + .slider:before { transform: translateX(24px); }
-
-    /* ===== TOAST ===== */
-    .toast { 
-      position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); 
-      background: var(--text-main); color: #fff; border-radius: 12px; padding: 14px 24px; 
-      font-size: 14px; font-weight: 700; z-index: 300; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-      opacity: 0; box-shadow: 0 10px 25px rgba(0,0,0,0.2); pointer-events: none; max-width: 90vw; 
-    }
+    .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: var(--text-main); color: #fff; border-radius: 12px; padding: 14px 24px; font-size: 14px; font-weight: 700; z-index: 300; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); opacity: 0; box-shadow: 0 10px 25px rgba(0,0,0,0.2); pointer-events: none; max-width: 90vw; }
     .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
     .toast.ok { border-left: 4px solid var(--success); }
     .toast.err { border-left: 4px solid var(--danger); }
-
-    /* ===== BOTTOM NAV ===== */
-    .bottom-nav { 
-      display: flex; position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); 
-      border-top: 1px solid var(--border); z-index: 200; padding-bottom: env(safe-area-inset-bottom, 0); 
-      box-shadow: 0 -4px 16px rgba(0,0,0,0.04); 
-    }
-    .nav-item { 
-      flex: 1; padding: 12px 4px; background: none; border: none; color: var(--text-muted); 
-      font-size: 11px; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; 
-      align-items: center; gap: 4px; position: relative; 
-    }
+    .bottom-nav { display: flex; position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); border-top: 1px solid var(--border); z-index: 200; padding-bottom: env(safe-area-inset-bottom, 0); box-shadow: 0 -4px 16px rgba(0,0,0,0.04); }
+    .nav-item { flex: 1; padding: 12px 4px; background: none; border: none; color: var(--text-muted); font-size: 11px; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; position: relative; }
     .nav-item.on { color: var(--primary); }
-    .nav-item.on::after { 
-      content: ""; position: absolute; top: 0; left: 50%; transform: translateX(-50%); 
-      width: 32px; height: 3px; background: var(--primary); border-radius: 0 0 3px 3px; 
-    }
+    .nav-item.on::after { content: ""; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 32px; height: 3px; background: var(--primary); border-radius: 0 0 3px 3px; }
     .nav-icon { font-size: 22px; }
-
     .hidden { display: none !important; }
-
-    @supports(padding: max(0px)) {
-      body { padding-bottom: max(100px, env(safe-area-inset-bottom)); }
-    }
+    @supports(padding: max(0px)) { body { padding-bottom: max(100px, env(safe-area-inset-bottom)); } }
   </style>
 </head>
 <body>
-
   <div id="toast" class="toast"></div>
-
   <div class="header">
     <div class="header-top">
       <div class="header-brand">
@@ -210,28 +113,22 @@
       </div>
     </div>
   </div>
-
   <div class="content">
-
     <div id="tab-residuos" class="tab-content">
       <div class="section-title">Clasificación de residuos</div>
-
       <div class="card">
         <div class="card-title">Configuración de Seguridad</div>
         <input type="password" id="apiKey" placeholder="Clave API Gemini (AIza...)" autocomplete="off" spellcheck="false" autocapitalize="off" oninput="autoSaveApiKey()">
         <div id="keyStatus" style="font-size:12px; font-weight:600; color:var(--text-muted)">✗ Clave requerida</div>
       </div>
-
       <div class="card">
         <div class="card-title">Trazabilidad (Sage 200)</div>
         <input type="text" id="res-lote" placeholder="Nº de Lote/Partida o Ubicación de origen">
       </div>
-
       <div class="mode-sel">
         <button class="mode-btn on" id="mode-res-foto" onclick="setResMode('foto')">📷 Foto Envase</button>
         <button class="mode-btn" id="mode-res-texto" onclick="setResMode('texto')">⌨️ Descripción</button>
       </div>
-
       <div id="res-foto-panel">
         <div class="upload-area" id="res-upload-area" onclick="triggerGalleryPicker('res')">
           <div class="upload-icon">🖼️</div>
@@ -252,14 +149,12 @@
           </label>
         </div>
       </div>
-
       <div id="res-texto-panel" class="hidden">
         <div class="card">
           <div class="card-title">Detalles del Residuo Industrial</div>
           <textarea id="res-desc" placeholder="Ej: Bidón de 20L con restos de disolvente orgánico, etiqueta borrada, olor característico a acetona..." oninput="checkResText()"></textarea>
         </div>
       </div>
-
       <div class="toggle-row">
         <div>
           <div class="toggle-text">¿Tránsito internacional / Exportación?</div>
@@ -270,27 +165,19 @@
           <span class="slider"></span>
         </label>
       </div>
-
-      <button class="btn btn-primary" id="btn-clasificar" disabled onclick="clasificarResiduo()">
-        🔍 ANALIZAR Y CLASIFICAR
-      </button>
-
+      <button class="btn btn-primary" id="btn-clasificar" disabled onclick="clasificarResiduo()">🔍 ANALIZAR Y CLASIFICAR</button>
       <div id="res-results"></div>
     </div>
-
     <div id="tab-etiqueta" class="tab-content hidden">
       <div class="section-title">Verificación de etiquetado</div>
-
       <div class="card">
         <div class="card-title">Trazabilidad (Sage 200)</div>
         <input type="text" id="etq-lote" placeholder="Nº de Lote/Partida o Referencia de producto">
       </div>
-
       <div class="mode-sel">
         <button class="mode-btn on" id="mode-etq-foto" onclick="setEtqMode('foto')">📷 Captura Etiqueta</button>
         <button class="mode-btn" id="mode-etq-texto" onclick="setEtqMode('texto')">⌨️ Texto Manual</button>
       </div>
-
       <div id="etq-foto-panel">
         <div class="upload-area" id="etq-upload-area" onclick="triggerGalleryPicker('etq')">
           <div class="upload-icon">🏷️</div>
@@ -311,796 +198,373 @@
           </label>
         </div>
       </div>
-
       <div id="etq-texto-panel" class="hidden">
         <div class="card">
           <div class="card-title">Ficha técnica o composición descrita</div>
           <textarea id="etq-desc" placeholder="Ej: Ácido clorhídrico 37%, marca comercial, pictograma GHS05 Corrosivo, Frases H314..." oninput="checkEtqText()"></textarea>
         </div>
       </div>
-
-      <button class="btn btn-primary" id="btn-verificar" disabled onclick="verificarEtiqueta()">
-        🏷️ VERIFICAR ETIQUETADO CLP
-      </button>
-
+      <button class="btn btn-primary" id="btn-verificar" disabled onclick="verificarEtiqueta()">🏷️ VERIFICAR ETIQUETADO CLP</button>
       <div id="etq-results"></div>
     </div>
-
     <div id="tab-historial" class="tab-content hidden">
       <div class="section-title">Registro histórico de análisis</div>
       <div id="historial-list"></div>
-      <button class="btn btn-danger" onclick="clearHistorial()" style="margin-top:12px;">
-        🗑️ Vaciar Historial Completo
-      </button>
+      <button class="btn btn-danger" onclick="clearHistorial()" style="margin-top:12px;">🗑️ Vaciar Historial Completo</button>
     </div>
-
   </div>
-
   <div class="bottom-nav">
-    <button class="nav-item on" id="nav-residuos" onclick="switchTab('residuos')">
-      <span class="nav-icon">🧪</span>
-      <span>RESIDUOS</span>
-    </button>
-    <button class="nav-item" id="nav-etiqueta" onclick="switchTab('etiqueta')">
-      <span class="nav-icon">🏷️</span>
-      <span>ETIQUETAS</span>
-    </button>
-    <button class="nav-item" id="nav-historial" onclick="switchTab('historial')">
-      <span class="nav-icon">📋</span>
-      <span>HISTORIAL</span>
-    </button>
+    <button class="nav-item on" id="nav-residuos" onclick="switchTab('residuos')"><span class="nav-icon">🧪</span><span>RESIDUOS</span></button>
+    <button class="nav-item" id="nav-etiqueta" onclick="switchTab('etiqueta')"><span class="nav-icon">🏷️</span><span>ETIQUETAS</span></button>
+    <button class="nav-item" id="nav-historial" onclick="switchTab('historial')"><span class="nav-icon">📋</span><span>HISTORIAL</span></button>
   </div>
-
   <script>
-    // ===== CONFIGURACIÓN API Y PROMPT NORMATIVO DEL INSPECTOR QUÍMICO =====
     const GEMINI_URL = (key) => `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`;
-
     const systemInstruction = `Eres un sistema experto en seguridad química industrial y logística de almacenamiento, especializado en el estricto cumplimiento del Reglamento Europeo CLP (CE Nº 1272/2008), el Sistema Globalmente Armonizado (SGA / GHS), el Acuerdo ADR 2026 y la Lista Europea de Residuos (Decisión 2000/532/CE - Código LER).
-
-Tu tarea es analizar la información proporcionada (ya sea una imagen de un envase/etiqueta o una descripción textual) y generar obligatoriamente un objeto JSON con la estructura exacta que se detalla a continuación. No debes incluir ninguna introducción, saludos, explicaciones preliminares ni bloques de código markdown (como \`\`\`json ... \`\`\`). Devuelve únicamente el texto plano del JSON.
-
+Tu tarea es analizar la información proporcionada (ya sea una imagen de un envase/etiqueta o una descripción textual) y generar obligatoriamente un objeto JSON con la estructura exacta que se detalla a continuación. No debes incluir ninguna introducción, saludos, explicaciones preliminares ni bloques de código markdown. Devuelve únicamente el texto plano del JSON.
 Estructura JSON requerida:
 {
-  "producto": {
-    "nombre_comercial": "Nombre o descripción identificada del producto químico o residuo",
-    "componentes_activos": ["Sustancia o compuesto A", "Sustancia o compuesto B"]
-  },
-  "clp": {
-    "pictogramas_codigo": ["GHS02", "GHS07"],
-    "palabra_advertencia": "PELIGRO / ATENCIÓN / NINGUNA",
-    "frases_h": ["H225", "H319"],
-    "frases_p": ["P210", "P280"]
-  },
-  "gestion_residuos": {
-    "codigo_ler": "XXXXXX",
-    "peligroso": true,
-    "descripcion_ler": "Descripción oficial del código asignado dentro de la Lista Europea de Residuos"
-  },
-  "almacenamiento_adq_adr": {
-    "clase_adr": "Clase de peligro ADR identificada (ej: Clase 3 Líquidos Inflamables)",
-    "incompatibilidades_criticas": [
-      "Incompatibilidad 1 (ej: No almacenar junto a sustancias de Clase 5.1 Comburentes)",
-      "Incompatibilidad 2"
-    ],
-    "medidas_confinamiento": "Requisitos de almacenamiento, ventilación, distancias o cubeto de retención según la normativa de almacenamiento de productos químicos aplicable"
-  },
-  "verificacion_etiqueta": {
-    "conforme": true,
-    "deficiencias_detectadas": [
-      "Si conforme es false, listar aquí las faltas detectadas (ej: Falta pictograma obligatorio de peligro para el medio ambiente GHS09 o frases H obligatorias)"
-    ]
-  }
+  "producto": { "nombre_comercial": "Nombre identificado", "componentes_activos": ["Sustancia A"] },
+  "clp": { "pictogramas_codigo": ["GHS02","GHS07"], "palabra_advertencia": "PELIGRO", "frases_h": ["H225"], "frases_p": ["P210"] },
+  "gestion_residuos": { "codigo_ler": "XXXXXX", "peligroso": true, "descripcion_ler": "Descripción oficial" },
+  "almacenamiento_adq_adr": { "clase_adr": "Clase 3 Líquidos Inflamables", "incompatibilidades_criticas": ["Incompatibilidad 1"], "medidas_confinamiento": "Requisitos de almacenamiento" },
+  "verificacion_etiqueta": { "conforme": true, "deficiencias_detectadas": [] }
 }
+Reglas: 1. Si peligroso=true, codigo_ler lleva asterisco (*). 2. Si exportación activa, usa nomenclatura GHS internacional. 3. Aplica principio de precaución si la información es insuficiente.`;
 
-Reglas operativas estrictas:
-1. Si los datos indican que el residuo es peligroso, el valor de "peligroso" debe ser true y el "codigo_ler" debe corresponder al código oficial con asterisco (*).
-2. Si el operario ha marcado la option de exportación o tránsito internacional, valida que las Frases H y P utilicen la nomenclatura estandarizada internacional del SGA/GHS y añade en "medidas_confinamiento" cualquier consideración idiomática o de etiquetado para aduanas.
-3. Mantén las respuestas técnicas, concisas y directamente ligadas a los códigos oficiales vigentes de las normativas. Si la información proporcionada es insuficiente para determinar algún campo, utiliza valores lógicos coherentes basados en el peor escenario de riesgo (principio de prudencia).`;
+    const state = { images: { res: null, etq: null }, modes: { res: 'foto', etq: 'foto' }, currentTab: 'residuos', lastResiduo: null, lastEtiqueta: null, historial: JSON.parse(localStorage.getItem('gq_historial') || '[]') };
 
-    // ===== CONTROL DE ESTADO GLOBAL =====
-    const state = {
-      images: { res: null, etq: null },
-      modes: { res: 'foto', etq: 'foto' },
-      currentTab: 'residuos',
-      lastResiduo: null,
-      lastEtiqueta: null,
-      historial: JSON.parse(localStorage.getItem('gq_historial') || '[]')
-    };
-
-    // Inicialización de la App
     window.addEventListener('DOMContentLoaded', () => {
       const savedKey = localStorage.getItem('gq_apikey') || '';
-      if (savedKey) {
-        document.getElementById('apiKey').value = savedKey;
-        showKeyStatus(true);
-      }
+      if (savedKey) { document.getElementById('apiKey').value = savedKey; showKeyStatus(true); }
       const savedOperator = localStorage.getItem('gq_operator') || '';
-      if (savedOperator) {
-        document.getElementById('operator').value = savedOperator;
-      }
+      if (savedOperator) document.getElementById('operator').value = savedOperator;
       renderHistorial();
     });
 
-    // ===== GESTIÓN DE CREDENCIALES AUTOMÁTICA =====
     function autoSaveApiKey() {
-      const keyInput = document.getElementById('apiKey').value.trim();
-      if (keyInput.length > 10) {
-        localStorage.setItem('gq_apikey', keyInput);
-        showKeyStatus(true);
-      } else {
-        showKeyStatus(false);
-      }
+      const k = document.getElementById('apiKey').value.trim();
+      if (k.length > 10) { localStorage.setItem('gq_apikey', k); showKeyStatus(true); } else { showKeyStatus(false); }
     }
-
-    function showKeyStatus(isConfigured) {
-      const statusLabel = document.getElementById('keyStatus');
-      statusLabel.textContent = isConfigured ? '✓ Clave API Configurada' : '✗ Clave requerida';
-      statusLabel.style.color = isConfigured ? 'var(--success)' : 'var(--danger)';
+    function showKeyStatus(ok) {
+      const s = document.getElementById('keyStatus');
+      s.textContent = ok ? '✓ Clave API Configurada' : '✗ Clave requerida';
+      s.style.color = ok ? 'var(--success)' : 'var(--danger)';
       updateActionButtonsState();
     }
-
-    function saveOperator() {
-      const operatorValue = document.getElementById('operator').value;
-      localStorage.setItem('gq_operator', operatorValue);
-      showToast(`Operario asignado: ${operatorValue || 'Ninguno'}`);
+    function saveOperator() { const v = document.getElementById('operator').value; localStorage.setItem('gq_operator', v); showToast(`Operario: ${v || 'Ninguno'}`); }
+    function switchTab(t) {
+      state.currentTab = t;
+      ['residuos','etiqueta','historial'].forEach(n => { document.getElementById('tab-'+n).classList.toggle('hidden', n!==t); document.getElementById('nav-'+n).classList.toggle('on', n===t); });
+      if (t==='historial') renderHistorial();
+      window.scrollTo({top:0,behavior:'smooth'});
     }
-
-    // ===== NAVEGACIÓN =====
-    function switchTab(targetTab) {
-      state.currentTab = targetTab;
-      ['residuos', 'etiqueta', 'historial'].forEach(tabName => {
-        document.getElementById('tab-' + tabName).classList.toggle('hidden', tabName !== targetTab);
-        document.getElementById('nav-' + tabName).classList.toggle('on', tabName === targetTab);
-      });
-      if (targetTab === 'historial') renderHistorial();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    function handleImage(el, pfx) {
+      const file = el.files && el.files[0];
+      if (!file) return;
+      if (!file.type || !file.type.startsWith('image/')) { showToast('No es una imagen válida','err'); el.value=''; return; }
+      const prev = document.getElementById(`${pfx}-preview`);
+      const area = document.getElementById(`${pfx}-upload-area`);
+      try { prev.src = URL.createObjectURL(file); area.classList.add('has-image'); } catch(e) {}
+      const r = new FileReader();
+      r.onload = e => { state.images[pfx] = e.target.result; showToast('Imagen lista'); updateActionButtonsState(); };
+      r.readAsDataURL(file);
+      el.value = '';
     }
-
-    // ===== MANEJO DE IMÁGENES =====
-    function handleImage(inputElement, modulePrefix) {
-      const file = inputElement.files && inputElement.files[0];
-      if (!file) {
-        showToast('No se seleccionó ningún archivo', 'err');
-        return;
-      }
-
-      showToast('Archivo recibido: ' + (file.name || 'imagen'), 'ok', 2000);
-
-      if (!file.type || !file.type.startsWith('image/')) {
-        showToast('El archivo seleccionado no es una imagen (' + (file.type || 'tipo desconocido') + ')', 'err');
-        inputElement.value = '';
-        return;
-      }
-
-      const previewElement = document.getElementById(`${modulePrefix}-preview`);
-      const uploadArea = document.getElementById(`${modulePrefix}-upload-area`);
-
-      try {
-        const objectUrl = URL.createObjectURL(file);
-        previewElement.src = objectUrl;
-        uploadArea.classList.add('has-image');
-      } catch (err) {
-        console.error('Object URL error', err);
-        showToast('No se pudo mostrar la vista previa: ' + err.message, 'err');
-      }
-
-      const reader = new FileReader();
-
-      reader.onerror = function() {
-        console.error('FileReader error', reader.error);
-        showToast('No se pudo preparar la imagen para el análisis (FileReader)', 'err');
-      };
-
-      reader.onload = function(e) {
-        state.images[modulePrefix] = e.target.result;
-        showToast('Imagen lista para analizar');
-        updateActionButtonsState();
-      };
-
-      try {
-        reader.readAsDataURL(file);
-      } catch (err) {
-        console.error(err);
-        showToast('Error al leer la imagen: ' + err.message, 'err');
-      } finally {
-        inputElement.value = '';
-      }
-    }
-
-    function triggerGalleryPicker(modulePrefix) {
-      const galleryInput = document.getElementById(`${modulePrefix}-gallery`);
-      if (galleryInput) galleryInput.click();
-    }
-
-    // ===== MODOS DE TRABAJO =====
-    function setResMode(mode) {
-      state.modes.res = mode;
-      document.getElementById('mode-res-foto').classList.toggle('on', mode === 'foto');
-      document.getElementById('mode-res-texto').classList.toggle('on', mode === 'texto');
-      document.getElementById('res-foto-panel').classList.toggle('hidden', mode !== 'foto');
-      document.getElementById('res-texto-panel').classList.toggle('hidden', mode !== 'texto');
-      updateActionButtonsState();
-    }
-
-    function setEtqMode(mode) {
-      state.modes.etq = mode;
-      document.getElementById('mode-etq-foto').classList.toggle('on', mode === 'foto');
-      document.getElementById('mode-etq-texto').classList.toggle('on', mode === 'texto');
-      document.getElementById('etq-foto-panel').classList.toggle('hidden', mode !== 'foto');
-      document.getElementById('etq-texto-panel').classList.toggle('hidden', mode !== 'texto');
-      updateActionButtonsState();
-    }
-
+    function triggerGalleryPicker(pfx) { const g = document.getElementById(`${pfx}-gallery`); if(g) g.click(); }
+    function setResMode(m) { state.modes.res=m; document.getElementById('mode-res-foto').classList.toggle('on',m==='foto'); document.getElementById('mode-res-texto').classList.toggle('on',m==='texto'); document.getElementById('res-foto-panel').classList.toggle('hidden',m!=='foto'); document.getElementById('res-texto-panel').classList.toggle('hidden',m!=='texto'); updateActionButtonsState(); }
+    function setEtqMode(m) { state.modes.etq=m; document.getElementById('mode-etq-foto').classList.toggle('on',m==='foto'); document.getElementById('mode-etq-texto').classList.toggle('on',m==='texto'); document.getElementById('etq-foto-panel').classList.toggle('hidden',m!=='foto'); document.getElementById('etq-texto-panel').classList.toggle('hidden',m!=='texto'); updateActionButtonsState(); }
     function checkResText() { updateActionButtonsState(); }
     function checkEtqText() { updateActionButtonsState(); }
-
-    function updateExportToggle() {
-      const toggle = document.getElementById('export-toggle').checked;
-      document.getElementById('export-sub').textContent = toggle ? 
-        'Logística comunitaria internacional GHS/ADR 2026' : 'Gestión interna · Ámbito nacional español';
-    }
-
+    function updateExportToggle() { document.getElementById('export-sub').textContent = document.getElementById('export-toggle').checked ? 'Logística comunitaria internacional GHS/ADR 2026' : 'Gestión interna · Ámbito nacional español'; }
     function updateActionButtonsState() {
-      const hasApiKey = (localStorage.getItem('gq_apikey') || '').length > 10;
-      const isResValid = state.modes.res === 'foto' ? !!state.images.res : document.getElementById('res-desc').value.trim().length > 5;
-      document.getElementById('btn-clasificar').disabled = !(hasApiKey && isResValid);
-      const isEtqValid = state.modes.etq === 'foto' ? !!state.images.etq : document.getElementById('etq-desc').value.trim().length > 5;
-      document.getElementById('btn-verificar').disabled = !(hasApiKey && isEtqValid);
+      const ok = (localStorage.getItem('gq_apikey')||'').length>10;
+      document.getElementById('btn-clasificar').disabled = !(ok && (state.modes.res==='foto' ? !!state.images.res : document.getElementById('res-desc').value.trim().length>5));
+      document.getElementById('btn-verificar').disabled = !(ok && (state.modes.etq==='foto' ? !!state.images.etq : document.getElementById('etq-desc').value.trim().length>5));
+    }
+    function showToast(msg, type='ok', dur=3000) {
+      const t = document.getElementById('toast'); t.textContent=msg; t.className=`toast ${type==='ok'?'ok':'err'}`;
+      requestAnimationFrame(()=>t.classList.add('show')); setTimeout(()=>t.classList.remove('show'),dur);
     }
 
-    function showToast(message, type = 'ok', duration = 3000) {
-      const toastElement = document.getElementById('toast');
-      toastElement.textContent = message;
-      toastElement.className = `toast ${type === 'ok' ? 'ok' : 'err'}`;
-      requestAnimationFrame(() => toastElement.classList.add('show'));
-      setTimeout(() => toastElement.classList.remove('show'), duration);
-    }
-
-    // ===== LLAMADA GENÉRICA A GEMINI =====
     async function llamarGemini(payload) {
       const apiKey = localStorage.getItem('gq_apikey');
       if (!apiKey) throw new Error('Falta la clave API de Gemini');
-
-      const response = await fetch(GEMINI_URL(apiKey), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...payload,
-          systemInstruction: { parts: [{ text: systemInstruction }] },
-          generationConfig: {
-            responseMimeType: "application/json",
-            temperature: 0.1
-          }
-        })
-      });
-
-      if (!response.ok) {
-        let detalle = '';
-        try {
-          const errBody = await response.json();
-          detalle = errBody?.error?.message ? `: ${errBody.error.message}` : '';
-        } catch (e) {}
-        throw new Error(`Error en el servidor API (${response.status})${detalle}`);
-      }
-
+      const response = await fetch(GEMINI_URL(apiKey), { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({...payload, systemInstruction:{parts:[{text:systemInstruction}]}, generationConfig:{responseMimeType:"application/json",temperature:0.1}}) });
+      if (!response.ok) { let d=''; try { const e=await response.json(); d=e?.error?.message?`: ${e.error.message}`:''; } catch(e){} throw new Error(`Error API (${response.status})${d}`); }
       const data = await response.json();
-      const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (!rawText) throw new Error('La API no devolvió contenido analizable');
-
-      try {
-        return JSON.parse(rawText);
-      } catch (e) {
-        const limpio = rawText.replace(/```json|```/g, '').trim();
-        return JSON.parse(limpio);
-      }
+      const raw = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!raw) throw new Error('La API no devolvió contenido');
+      try { return JSON.parse(raw); } catch(e) { return JSON.parse(raw.replace(/```json|```/g,'').trim()); }
     }
 
-    // ===== MÓDULO RESIDUOS =====
     async function clasificarResiduo() {
-      const apiKey = localStorage.getItem('gq_apikey');
-      const operator = localStorage.getItem('gq_operator') || 'No especificado';
-      const lote = document.getElementById('res-lote').value.trim() || 'Sin asignar';
+      const operator = localStorage.getItem('gq_operator')||'No especificado';
+      const lote = document.getElementById('res-lote').value.trim()||'Sin asignar';
       const isExport = document.getElementById('export-toggle').checked;
       const resultsDiv = document.getElementById('res-results');
       const btn = document.getElementById('btn-clasificar');
-
-      if (!apiKey) {
-        showToast('Falta la clave API de Gemini', 'err');
-        return;
-      }
-
-      btn.disabled = true;
-      resultsDiv.innerHTML = `<div class="card" style="text-align:center;">⏳ Procesando análisis normativo bajo CLP/ADR/LER...</div>`;
-
+      btn.disabled=true;
+      resultsDiv.innerHTML=`<div class="card" style="text-align:center;">⏳ Procesando análisis normativo bajo CLP/ADR/LER...</div>`;
       try {
         let payload = {};
-
-        if (state.modes.res === 'foto' && state.images.res) {
-          const base64Parts = state.images.res.split(',');
-          const mimeType = base64Parts[0].match(/:(.*?);/)[1];
-          const base64Data = base64Parts[1];
-
-          payload = {
-            contents: [{
-              parts: [
-                { text: `Analiza este residuo industrial para su clasificación LER/CLP/ADR. Exportación Internacional activa: ${isExport}. Operario en turno: ${operator}. Lote/Partida Sage 200: ${lote}` },
-                { inlineData: { mimeType: mimeType, data: base64Data } }
-              ]
-            }]
-          };
+        if (state.modes.res==='foto' && state.images.res) {
+          const parts = state.images.res.split(','); const mime=parts[0].match(/:(.*?);/)[1]; const b64=parts[1];
+          payload={contents:[{parts:[{text:`Analiza este residuo industrial. Exportación: ${isExport}. Operario: ${operator}. Lote Sage 200: ${lote}`},{inlineData:{mimeType:mime,data:b64}}]}]};
         } else {
-          const textDesc = document.getElementById('res-desc').value;
-          payload = {
-            contents: [{
-              parts: [{ text: `Analiza la descripción del residuo: "${textDesc}". Exportación Internacional activa: ${isExport}. Operario en turno: ${operator}. Lote/Partida Sage 200: ${lote}` }]
-            }]
-          };
+          payload={contents:[{parts:[{text:`Analiza: "${document.getElementById('res-desc').value}". Exportación: ${isExport}. Operario: ${operator}. Lote: ${lote}`}]}]};
         }
-
-        const jsonResponse = await llamarGemini(payload);
-
-        state.lastResiduo = jsonResponse;
-        renderResultadosQuimicos(jsonResponse, resultsDiv, operator, lote);
-        saveToHistorial('Clasificación Residuos', jsonResponse.producto?.nombre_comercial || 'Residuo Analizado', operator, lote, jsonResponse);
-        showToast('Análisis normativo completado');
-
-      } catch (error) {
-        console.error(error);
-        resultsDiv.innerHTML = `<div class="card" style="border-left:4px solid var(--danger);">❌ Error de procesamiento: ${error.message}</div>`;
-        showToast('Error de análisis', 'err');
-      } finally {
-        btn.disabled = false;
-        updateActionButtonsState();
-      }
+        const json = await llamarGemini(payload);
+        state.lastResiduo=json;
+        renderResultadosQuimicos(json, resultsDiv, operator, lote);
+        saveToHistorial('Clasificación Residuos', json.producto?.nombre_comercial||'Residuo', operator, lote, json);
+        showToast('Análisis completado');
+      } catch(e) {
+        console.error(e);
+        resultsDiv.innerHTML=`<div class="card" style="border-left:4px solid var(--danger);">❌ ${e.message}</div>`;
+        showToast('Error de análisis','err');
+      } finally { btn.disabled=false; updateActionButtonsState(); }
     }
 
-    // ===== MÓDULO ETIQUETAS =====
     async function verificarEtiqueta() {
-      const apiKey = localStorage.getItem('gq_apikey');
-      const operator = localStorage.getItem('gq_operator') || 'No especificado';
-      const lote = document.getElementById('etq-lote').value.trim() || 'Sin asignar';
+      const operator = localStorage.getItem('gq_operator')||'No especificado';
+      const lote = document.getElementById('etq-lote').value.trim()||'Sin asignar';
       const resultsDiv = document.getElementById('etq-results');
       const btn = document.getElementById('btn-verificar');
-
-      if (!apiKey) {
-        showToast('Falta la clave API de Gemini', 'err');
-        return;
-      }
-
-      btn.disabled = true;
-      resultsDiv.innerHTML = `<div class="card" style="text-align:center;">⏳ Validando parámetros CLP/SGA del etiquetado...</div>`;
-
+      btn.disabled=true;
+      resultsDiv.innerHTML=`<div class="card" style="text-align:center;">⏳ Validando parámetros CLP/SGA...</div>`;
       try {
         let payload = {};
-
-        if (state.modes.etq === 'foto' && state.images.etq) {
-          const base64Parts = state.images.etq.split(',');
-          const mimeType = base64Parts[0].match(/:(.*?);/)[1];
-          const base64Data = base64Parts[1];
-
-          payload = {
-            contents: [{
-              parts: [
-                { text: `Verifica si el etiquetado CLP de esta imagen es conforme. Operario en turno: ${operator}. Lote/Partida Sage 200: ${lote}` },
-                { inlineData: { mimeType: mimeType, data: base64Data } }
-              ]
-            }]
-          };
+        if (state.modes.etq==='foto' && state.images.etq) {
+          const parts=state.images.etq.split(','); const mime=parts[0].match(/:(.*?);/)[1]; const b64=parts[1];
+          payload={contents:[{parts:[{text:`Verifica el etiquetado CLP. Operario: ${operator}. Lote: ${lote}`},{inlineData:{mimeType:mime,data:b64}}]}]};
         } else {
-          const textDesc = document.getElementById('etq-desc').value;
-          payload = {
-            contents: [{
-              parts: [{ text: `Verifica si el etiquetado CLP descrito es conforme: "${textDesc}". Operario en turno: ${operator}. Lote/Partida Sage 200: ${lote}` }]
-            }]
-          };
+          payload={contents:[{parts:[{text:`Verifica CLP: "${document.getElementById('etq-desc').value}". Operario: ${operator}. Lote: ${lote}`}]}]};
         }
-
-        const jsonResponse = await llamarGemini(payload);
-
-        state.lastEtiqueta = jsonResponse;
-        renderResultadosEtiqueta(jsonResponse, resultsDiv, operator, lote);
-        saveToHistorial('Verificación Etiqueta', jsonResponse.producto?.nombre_comercial || 'Etiqueta Analizada', operator, lote, jsonResponse);
-        showToast('Verificación CLP completada');
-
-      } catch (error) {
-        console.error(error);
-        resultsDiv.innerHTML = `<div class="card" style="border-left:4px solid var(--danger);">❌ Error de procesamiento: ${error.message}</div>`;
-        showToast('Error de verificación', 'err');
-      } finally {
-        btn.disabled = false;
-        updateActionButtonsState();
-      }
+        const json = await llamarGemini(payload);
+        state.lastEtiqueta=json;
+        renderResultadosEtiqueta(json, resultsDiv, operator, lote);
+        saveToHistorial('Verificación Etiqueta', json.producto?.nombre_comercial||'Etiqueta', operator, lote, json);
+        showToast('Verificación completada');
+      } catch(e) {
+        console.error(e);
+        resultsDiv.innerHTML=`<div class="card" style="border-left:4px solid var(--danger);">❌ ${e.message}</div>`;
+        showToast('Error de verificación','err');
+      } finally { btn.disabled=false; updateActionButtonsState(); }
     }
 
-    // ===== RENDERIZADO DINÁMICO - RESIDUOS =====
-    function renderResultadosQuimicos(data, container, operator, lote) {
-      const lerPeligroso = data.gestion_residuos.peligroso ? `<span style="color:var(--danger); font-weight:800;">[RESIDUO PELIGROSO *]</span>` : `<span style="color:var(--success);">[Residuo No Peligroso]</span>`;
-      
-      container.innerHTML = `
-        <div class="card" style="border-left: 4px solid ${data.gestion_residuos.peligroso ? 'var(--danger)' : 'var(--success)'};">
-          <div class="card-title">Identificación LER (Lista Europea de Residuos)</div>
-          <div style="font-size: 18px; font-weight: 900; font-family: monospace; margin-bottom:6px;">
-            Código LER: ${data.gestion_residuos.codigo_ler} <br>${lerPeligroso}
-          </div>
-          <p style="font-size:14px; color:#4a5568; margin-top:6px;">${data.gestion_residuos.descripcion_ler}</p>
-        </div>
+    // ===== PICTOGRAMAS GHS =====
+    function renderPictogramasHTML(codigos) {
+      const u = {
+        'GHS01':'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/GHS-pictogram-explos.svg/100px-GHS-pictogram-explos.svg.png',
+        'GHS02':'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/GHS-pictogram-flamm.svg/100px-GHS-pictogram-flamm.svg.png',
+        'GHS03':'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/GHS-pictogram-roxidiz.svg/100px-GHS-pictogram-roxidiz.svg.png',
+        'GHS04':'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/GHS-pictogram-compress.svg/100px-GHS-pictogram-compress.svg.png',
+        'GHS05':'https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/GHS-pictogram-acid.svg/100px-GHS-pictogram-acid.svg.png',
+        'GHS06':'https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/GHS-pictogram-skull.svg/100px-GHS-pictogram-skull.svg.png',
+        'GHS07':'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/GHS-pictogram-exclam.svg/100px-GHS-pictogram-exclam.svg.png',
+        'GHS08':'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/GHS-pictogram-silhouette.svg/100px-GHS-pictogram-silhouette.svg.png',
+        'GHS09':'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/GHS-pictogram-pollu.svg/100px-GHS-pictogram-pollu.svg.png'
+      };
+      if (!codigos||!codigos.length) return '<span style="color:var(--text-muted);font-size:13px;">Ninguno</span>';
+      return codigos.map(c => {
+        const k=c.toUpperCase().trim(); const url=u[k];
+        if (!url) return `<span style="font-size:11px;font-weight:700;background:#f0f4f8;padding:4px 8px;border-radius:8px;">${k}</span>`;
+        return `<div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><img src="${url}" alt="${k}" title="${k}" style="width:64px;height:64px;object-fit:contain;"><span style="font-size:10px;font-weight:800;color:var(--primary);">${k}</span></div>`;
+      }).join('');
+    }
 
+    // ===== RENDERIZADO RESIDUOS =====
+    function renderResultadosQuimicos(data, container, operator, lote) {
+      const lerPeligroso = data.gestion_residuos.peligroso
+        ? `<span style="color:var(--danger);font-weight:800;">[RESIDUO PELIGROSO *]</span>`
+        : `<span style="color:var(--success);">[Residuo No Peligroso]</span>`;
+      container.innerHTML = `
+        <div class="card" style="border-left:4px solid ${data.gestion_residuos.peligroso?'var(--danger)':'var(--success)'};">
+          <div class="card-title">Identificación LER</div>
+          <div style="font-size:18px;font-weight:900;font-family:monospace;margin-bottom:6px;">Código LER: ${data.gestion_residuos.codigo_ler}<br>${lerPeligroso}</div>
+          <p style="font-size:14px;color:#4a5568;margin-top:6px;">${data.gestion_residuos.descripcion_ler}</p>
+        </div>
         <div class="card">
           <div class="card-title">Clasificación CLP (Reglamento CE 1272/2008)</div>
-          <div style="font-weight:800; color:var(--primary); margin-bottom:8px;">
-            Palabra de Advertencia: ${data.clp.palabra_advertencia}
-          </div>
-        <div style="display:flex;flex-wrap:wrap;gap:8px;">${renderPictogramasHTML(data.clp.pictogramas_codigo)}</div>
+          <div style="font-weight:800;color:var(--primary);margin-bottom:12px;">Palabra de Advertencia: ${data.clp.palabra_advertencia}</div>
+          <div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;">Pictogramas GHS</div>
+          <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px;">${renderPictogramasHTML(data.clp.pictogramas_codigo)}</div>
           <div style="margin-bottom:8px;">
             <strong>Indicaciones de Peligro:</strong>
-          Pictogramas: ${data.clp.pictogramas_codigo.join(', ')}
-              ${data.clp.frases_h.map(h => `<li><strong>${h}</strong></li>`).join('')}
+            <ul style="padding-left:20px;font-size:13px;margin-top:4px;">
+              ${data.clp.frases_h.map(h=>`<li><strong>${h}</strong></li>`).join('')}
             </ul>
           </div>
           <div>
             <strong>Consejos de Prudencia:</strong>
-            <ul style="padding-left:20px; font-size:13px; margin-top:4px; color:var(--text-muted)">
-              ${data.clp.frases_p.map(p => `<li>${p}</li>`).join('')}
+            <ul style="padding-left:20px;font-size:13px;margin-top:4px;color:var(--text-muted);">
+              ${data.clp.frases_p.map(p=>`<li>${p}</li>`).join('')}
             </ul>
           </div>
         </div>
-
-        <div class="card" style="border-left: 4px solid var(--warning);">
+        <div class="card" style="border-left:4px solid var(--warning);">
           <div class="card-title">Logística e Incompatibilidades (ADR / APQ)</div>
-          <div style="font-weight:700; font-size:14px; margin-bottom:6px;">Clasificación de Transporte: ${data.almacenamiento_adq_adr.clase_adr}</div>
-          <div style="font-size:13px; margin-bottom:6px;">
-            <strong>Incompatibilidades Críticas:</strong>
-            <ul style="padding-left:20px; color:var(--danger); margin-top:2px;">
-              ${data.almacenamiento_adq_adr.incompatibilidades_criticas.map(inc => `<li>${inc}</li>`).join('')}
-            </ul>
-          </div>
-          <p style="font-size:13px; background:#fffaf0; padding:8px; border-radius:8px; border:1px solid #feebc8; margin-top:8px;">
-            <strong>Confinamiento APQ:</strong> ${data.almacenamiento_adq_adr.medidas_confinamiento}
-          </p>
+          <div style="font-weight:700;font-size:14px;margin-bottom:6px;">Clasificación: ${data.almacenamiento_adq_adr.clase_adr}</div>
+          <strong>Incompatibilidades:</strong>
+          <ul style="padding-left:20px;color:var(--danger);font-size:13px;margin-top:4px;">
+            ${data.almacenamiento_adq_adr.incompatibilidades_criticas.map(i=>`<li>${i}</li>`).join('')}
+          </ul>
+          <p style="font-size:13px;background:#fffaf0;padding:8px;border-radius:8px;border:1px solid #feebc8;margin-top:8px;"><strong>Confinamiento APQ:</strong> ${data.almacenamiento_adq_adr.medidas_confinamiento}</p>
         </div>
-
-        <button class="btn btn-secondary" onclick='generarPDF(state.lastResiduo, "Clasificación de Residuos", ${JSON.stringify(operator)}, ${JSON.stringify(lote)})'>
-          📄 Generar Informe PDF
-        </button>
-
-        <button class="btn btn-secondary" onclick='generarEtiquetaResiduo(state.lastResiduo, ${JSON.stringify(operator)}, ${JSON.stringify(lote)})'>
-          🏷️ Generar Etiqueta Imprimible (20x14cm)
-        </button>
-      `;
+        <button class="btn btn-secondary" onclick='generarPDF(state.lastResiduo,"Clasificación de Residuos",${JSON.stringify(operator)},${JSON.stringify(lote)})'>📄 Generar Informe PDF</button>
+        <button class="btn btn-secondary" onclick='generarEtiquetaResiduo(state.lastResiduo,${JSON.stringify(operator)},${JSON.stringify(lote)})'>🏷️ Generar Etiqueta (20x14cm)</button>`;
     }
 
-    // ===== RENDERIZADO DINÁMICO - ETIQUETAS =====
+    // ===== RENDERIZADO ETIQUETAS =====
     function renderResultadosEtiqueta(data, container, operator, lote) {
-      const ver = data.verificacion_etiqueta || { conforme: true, deficiencias_detectadas: [] };
-      const conformeBadge = ver.conforme
-        ? `<span style="color:var(--success); font-weight:800;">✔ ETIQUETADO CONFORME</span>`
-        : `<span style="color:var(--danger); font-weight:800;">✘ NO CONFORME · REQUIERE CORRECCIÓN</span>`;
-
+      const ver = data.verificacion_etiqueta||{conforme:true,deficiencias_detectadas:[]};
+      const badge = ver.conforme
+        ? `<span style="color:var(--success);font-weight:800;">✔ ETIQUETADO CONFORME</span>`
+        : `<span style="color:var(--danger);font-weight:800;">✘ NO CONFORME · REQUIERE CORRECCIÓN</span>`;
       container.innerHTML = `
-        <div class="card" style="border-left: 4px solid ${ver.conforme ? 'var(--success)' : 'var(--danger)'};">
-          <div class="card-title">Resultado de Verificación CLP</div>
-          <div style="font-size:16px; margin-bottom:8px;">${conformeBadge}</div>
-          <div style="font-size:14px; font-weight:700; margin-bottom:4px;">${data.producto?.nombre_comercial || 'Producto identificado'}</div>
-          ${
-            !ver.conforme
-              ? `<div style="margin-top:8px;">
-                  <ul style="padding-left:20px; color:var(--danger);">
-                    ${(ver.deficiencias_detectadas || []).map(d => `<li>${d}</li>`).join('')}
-                  </ul>
-                </div>`
-              : `<p style="font-size:13px; color:var(--text-muted); margin-top:4px;">La etiqueta cumple con los pictogramas, palabra de advertencia y frases H/P obligatorias para esta sustancia.</p>`
-          }
+        <div class="card" style="border-left:4px solid ${ver.conforme?'var(--success)':'var(--danger)'};">
+          <div class="card-title">Resultado Verificación CLP</div>
+          <div style="font-size:16px;margin-bottom:8px;">${badge}</div>
+          <div style="font-size:14px;font-weight:700;">${data.producto?.nombre_comercial||'Producto identificado'}</div>
+          ${!ver.conforme?`<ul style="padding-left:20px;color:var(--danger);margin-top:8px;">${(ver.deficiencias_detectadas||[]).map(d=>`<li>${d}</li>`).join('')}</ul>`:`<p style="font-size:13px;color:var(--text-muted);margin-top:4px;">La etiqueta cumple con pictogramas, palabra de advertencia y frases H/P.</p>`}
         </div>
-
         <div class="card">
-          <div class="card-title">Elementos CLP Esperados (Ref. CE 1272/2008)</div>
-          <div style="font-weight:800; color:var(--primary); margin-bottom:8px;">
-            Palabra de Advertencia: ${data.clp.palabra_advertencia}
-          </div>
-          <div style="font-size:13px; color:var(--text-muted); margin-bottom:8px;">
-            Pictogramas obligatorios: ${data.clp.pictogramas_codigo.join(', ')}
-          </div>
+          <div class="card-title">Elementos CLP Esperados (CE 1272/2008)</div>
+          <div style="font-weight:800;color:var(--primary);margin-bottom:12px;">Palabra de Advertencia: ${data.clp.palabra_advertencia}</div>
+          <div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;">Pictogramas GHS obligatorios</div>
+          <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px;">${renderPictogramasHTML(data.clp.pictogramas_codigo)}</div>
           <div style="margin-bottom:8px;">
             <strong>Frases H:</strong>
-            <ul style="padding-left:20px; font-size:13px; margin-top:4px;">
-            Pictogramas obligatorios: ${data.clp.pictogramas_codigo.join(', ')}
+            <ul style="padding-left:20px;font-size:13px;margin-top:4px;">
+              ${data.clp.frases_h.map(h=>`<li><strong>${h}</strong></li>`).join('')}
             </ul>
           </div>
           <div>
             <strong>Frases P:</strong>
-            <ul style="padding-left:20px; font-size:13px; margin-top:4px; color:var(--text-muted)">
-              ${data.clp.frases_p.map(p => `<li>${p}</li>`).join('')}
+            <ul style="padding-left:20px;font-size:13px;margin-top:4px;color:var(--text-muted);">
+              ${data.clp.frases_p.map(p=>`<li>${p}</li>`).join('')}
             </ul>
           </div>
         </div>
-
-        <div class="card" style="border-left: 4px solid var(--warning);">
-          <div class="card-title">Notas de Almacenamiento Asociadas</div>
-          <p style="font-size:13px; background:#fffaf0; padding:8px; border-radius:8px; border:1px solid #feebc8;">
+        <div class="card" style="border-left:4px solid var(--warning);">
+          <div class="card-title">Almacenamiento ADR / APQ</div>
+          <p style="font-size:13px;background:#fffaf0;padding:8px;border-radius:8px;border:1px solid #feebc8;">
             <strong>Clase ADR:</strong> ${data.almacenamiento_adq_adr.clase_adr}<br><br>
-            <strong>Confinamiento APQ:</strong> ${data.almacenamiento_adq_adr.medidas_confinamiento}
+            <strong>Confinamiento:</strong> ${data.almacenamiento_adq_adr.medidas_confinamiento}
           </p>
         </div>
-
-        <button class="btn btn-secondary" onclick='generarPDF(state.lastEtiqueta, "Verificación de Etiquetado", ${JSON.stringify(operator)}, ${JSON.stringify(lote)})'>
-          📄 Generar Informe PDF
-        </button>
-
-        <button class="btn btn-secondary" onclick='generarEtiquetaIdentificacion(state.lastEtiqueta, ${JSON.stringify(operator)}, ${JSON.stringify(lote)})'>
-          🏷️ Generar Etiqueta Imprimible (20x14cm)
-        </button>
-      `;
+        <button class="btn btn-secondary" onclick='generarPDF(state.lastEtiqueta,"Verificación de Etiquetado",${JSON.stringify(operator)},${JSON.stringify(lote)})'>📄 Generar Informe PDF</button>
+        <button class="btn btn-secondary" onclick='generarEtiquetaIdentificacion(state.lastEtiqueta,${JSON.stringify(operator)},${JSON.stringify(lote)})'>🏷️ Generar Etiqueta (20x14cm)</button>`;
     }
 
-    // ===== GENERACIÓN DE INFORMES PDF (trazabilidad FDS / Sage 200) =====
-    function generarPDF(data, tipoAnalisis, operario, lote) {
-      if (!data) {
-        showToast('No hay datos de análisis para exportar', 'err');
-        return;
-      }
-      if (!window.jspdf || !window.jspdf.jsPDF) {
-        showToast('No se pudo cargar el motor de PDF', 'err');
-        return;
-      }
-
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      const fecha = new Date().toLocaleString('es-ES', { timeZone: 'Europe/Madrid' });
-
-      doc.setFontSize(16);
-      doc.setTextColor(27, 58, 107);
-      doc.text('OLLEARIS · INFORME DE CUMPLIMIENTO QUÍMICO', 14, 16);
-
-      doc.setFontSize(10);
-      doc.setTextColor(80, 80, 80);
-      doc.text(`Tipo de análisis: ${tipoAnalisis}`, 14, 24);
-      doc.text(`Fecha: ${fecha}`, 14, 29);
-      doc.text(`Operario: ${operario || 'No especificado'}`, 14, 34);
-      doc.text(`Lote / Partida (Sage 200): ${lote || 'Sin asignar'}`, 14, 39);
-
-      let cursorY = 46;
-
-      doc.autoTable({
-        startY: cursorY,
-        head: [['Producto', 'Componentes activos']],
-        body: [[
-          data.producto?.nombre_comercial || '-',
-          (data.producto?.componentes_activos || []).join(', ') || '-'
-        ]],
-        styles: { fontSize: 9 },
-        headStyles: { fillColor: [27, 58, 107] }
-      });
-      cursorY = doc.lastAutoTable.finalY + 6;
-
-      doc.autoTable({
-        startY: cursorY,
-        head: [['CLP - Reglamento CE 1272/2008', '']],
-        body: [
-          ['Palabra de advertencia', data.clp?.palabra_advertencia || '-'],
-          ['Pictogramas', (data.clp?.pictogramas_codigo || []).join(', ') || '-'],
-          ['Frases H', (data.clp?.frases_h || []).join(', ') || '-'],
-          ['Frases P', (data.clp?.frases_p || []).join(', ') || '-']
-        ],
-        styles: { fontSize: 9 },
-        headStyles: { fillColor: [27, 58, 107] }
-      });
-      cursorY = doc.lastAutoTable.finalY + 6;
-
-      doc.autoTable({
-        startY: cursorY,
-        head: [['Gestión de Residuos (LER)', '']],
-        body: [
-          ['Código LER', data.gestion_residuos?.codigo_ler || '-'],
-          ['Peligroso', data.gestion_residuos?.peligroso ? 'SÍ (*)' : 'NO'],
-          ['Descripción LER', data.gestion_residuos?.descripcion_ler || '-']
-        ],
-        styles: { fontSize: 9 },
-        headStyles: { fillColor: [27, 58, 107] }
-      });
-      cursorY = doc.lastAutoTable.finalY + 6;
-
-      doc.autoTable({
-        startY: cursorY,
-        head: [['Logística ADR / APQ', '']],
-        body: [
-          ['Clase ADR', data.almacenamiento_adq_adr?.clase_adr || '-'],
-          ['Incompatibilidades críticas', (data.almacenamiento_adq_adr?.incompatibilidades_criticas || []).join(' | ') || '-'],
-          ['Medidas de confinamiento APQ', data.almacenamiento_adq_adr?.medidas_confinamiento || '-']
-        ],
-        styles: { fontSize: 9 },
-        headStyles: { fillColor: [27, 58, 107] }
-      });
-      cursorY = doc.lastAutoTable.finalY + 6;
-
-      const ver = data.verificacion_etiqueta || { conforme: true, deficiencias_detectadas: [] };
-      doc.autoTable({
-        startY: cursorY,
-        head: [['Verificación de Etiquetado CLP', '']],
-        body: [
-          ['Conforme', ver.conforme ? 'SÍ' : 'NO'],
-          ['Deficiencias detectadas', (ver.deficiencias_detectadas || []).join(' | ') || '—']
-        ],
-        styles: { fontSize: 9 },
-        headStyles: { fillColor: [27, 58, 107] }
-      });
-
-      const nombreLimpio = (data.producto?.nombre_comercial || 'analisis').replace(/[^a-z0-9]+/gi, '_').toLowerCase();
-      doc.save(`Ollearis_${nombreLimpio}_${Date.now()}.pdf`);
+    // ===== PDF INFORME =====
+    function generarPDF(data, tipo, operario, lote) {
+      if (!data||!window.jspdf||!window.jspdf.jsPDF) { showToast('Error al generar PDF','err'); return; }
+      const {jsPDF}=window.jspdf; const doc=new jsPDF(); const fecha=new Date().toLocaleString('es-ES',{timeZone:'Europe/Madrid'});
+      doc.setFontSize(16); doc.setTextColor(27,58,107); doc.text('OLLEARIS · INFORME DE CUMPLIMIENTO QUÍMICO',14,16);
+      doc.setFontSize(10); doc.setTextColor(80,80,80);
+      doc.text(`Tipo: ${tipo}`,14,24); doc.text(`Fecha: ${fecha}`,14,29); doc.text(`Operario: ${operario||'-'}`,14,34); doc.text(`Lote Sage 200: ${lote||'-'}`,14,39);
+      let y=46;
+      doc.autoTable({startY:y,head:[['Producto','Componentes']],body:[[data.producto?.nombre_comercial||'-',(data.producto?.componentes_activos||[]).join(', ')||'-']],styles:{fontSize:9},headStyles:{fillColor:[27,58,107]}}); y=doc.lastAutoTable.finalY+6;
+      doc.autoTable({startY:y,head:[['CLP - CE 1272/2008','']],body:[['Advertencia',data.clp?.palabra_advertencia||'-'],['Pictogramas',(data.clp?.pictogramas_codigo||[]).join(', ')||'-'],['Frases H',(data.clp?.frases_h||[]).join(', ')||'-'],['Frases P',(data.clp?.frases_p||[]).join(', ')||'-']],styles:{fontSize:9},headStyles:{fillColor:[27,58,107]}}); y=doc.lastAutoTable.finalY+6;
+      doc.autoTable({startY:y,head:[['Gestión Residuos LER','']],body:[['Código LER',data.gestion_residuos?.codigo_ler||'-'],['Peligroso',data.gestion_residuos?.peligroso?'SÍ (*)':'NO'],['Descripción',data.gestion_residuos?.descripcion_ler||'-']],styles:{fontSize:9},headStyles:{fillColor:[27,58,107]}}); y=doc.lastAutoTable.finalY+6;
+      doc.autoTable({startY:y,head:[['Logística ADR / APQ','']],body:[['Clase ADR',data.almacenamiento_adq_adr?.clase_adr||'-'],['Incompatibilidades',(data.almacenamiento_adq_adr?.incompatibilidades_criticas||[]).join(' | ')||'-'],['Confinamiento APQ',data.almacenamiento_adq_adr?.medidas_confinamiento||'-']],styles:{fontSize:9},headStyles:{fillColor:[27,58,107]}}); y=doc.lastAutoTable.finalY+6;
+      const ver=data.verificacion_etiqueta||{conforme:true,deficiencias_detectadas:[]};
+      doc.autoTable({startY:y,head:[['Verificación Etiquetado','']],body:[['Conforme',ver.conforme?'SÍ':'NO'],['Deficiencias',(ver.deficiencias_detectadas||[]).join(' | ')||'—']],styles:{fontSize:9},headStyles:{fillColor:[27,58,107]}});
+      doc.save(`Ollearis_${(data.producto?.nombre_comercial||'analisis').replace(/[^a-z0-9]+/gi,'_').toLowerCase()}_${Date.now()}.pdf`);
       showToast('Informe PDF generado');
     }
 
-    // ===== GENERACIÓN DE ETIQUETAS IMPRIMIBLES (FORMATO INDUSTRIAL 20x14 cm) =====
+    // ===== ETIQUETA RESIDUO 20x14cm =====
     function generarEtiquetaResiduo(data, operario, lote) {
-      if(!data) return;
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF({ orientation: 'landscape', unit: 'cm', format: [20, 14] });
-      
-      const labelW = 20;
-      
-      doc.setFillColor(27, 58, 107);
-      doc.rect(0.5, 0.5, labelW - 1, 1.2, 'F');
-      doc.setFontSize(14);
-      doc.setTextColor(255, 255, 255);
-      doc.setFont("Helvetica", "Bold");
-      doc.text("ETIQUETA DE RESIDUO PELIGROSO", labelW / 2, 1.2, { align: "center" });
-
-      doc.setDrawColor(27, 58, 107);
-      doc.setLineWidth(0.04);
-      doc.rect(0.5, 0.5, labelW - 1, 13, 'S');
-
-      doc.setFontSize(10);
-      doc.setTextColor(0, 0, 0);
-      doc.text(`CÓDIGO LER: ${data.gestion_residuos?.codigo_ler || '-'}`, 1, 2.5);
-      doc.text(`DENOMINACIÓN: ${data.producto?.nombre_comercial || '-'}`, 1, 3.2);
-      doc.text(`CLASE ADR: ${data.almacenamiento_adq_adr?.clase_adr || '-'}`, 1, 3.9);
-      
-      doc.setLineDash([0.1, 0.1], 0);
-      doc.line(0.5, 4.5, labelW - 0.5, 4.5);
-      doc.setLineDash([], 0);
-
-      doc.text(`ADVERTENCIA: ${data.clp?.palabra_advertencia || 'NINGUNA'}`, 1, 5.2);
-      doc.setFont("Helvetica", "Normal");
-      doc.setFontSize(8);
-      
-      let hText = `Indicaciones H: ${(data.clp?.frases_h || []).join(', ')}`;
-      let splitH = doc.splitTextToSize(hText, labelW - 2);
-      doc.text(splitH, 1, 5.8);
-
-      let pText = `Consejos P: ${(data.clp?.frases_p || []).join(', ')}`;
-      let splitP = doc.splitTextToSize(pText, labelW - 2);
-      doc.text(splitP, 1, 7.2);
-
-      doc.setLineDash([0.1, 0.1], 0);
-      doc.line(0.5, 9.5, labelW - 0.5, 9.5);
-      doc.setLineDash([], 0);
-
-      doc.setFontSize(9);
-      doc.setFont("Helvetica", "Bold");
-      doc.text("DATOS DE TRAZABILIDAD (SAGE 200)", 1, 10.2);
-      doc.setFont("Helvetica", "Normal");
-      doc.text(`Lote / Ubicación Origen: ${lote || 'Sin asignar'}`, 1, 10.9);
-      doc.text(`Operario Responsable: ${operario || 'No especificado'}`, 1, 11.6);
-      doc.text(`Fecha Emisión: ${new Date().toLocaleDateString('es-ES')}`, 1, 12.3);
-
+      if (!data||!window.jspdf) return;
+      const {jsPDF}=window.jspdf;
+      const doc=new jsPDF({orientation:'landscape',unit:'cm',format:[20,14]});
+      const W=20; const NAVY=[27,58,107]; const GOLD=[212,175,55];
+      doc.setFillColor(...NAVY); doc.rect(0.5,0.5,W-1,1.4,'F');
+      doc.setFontSize(7); doc.setTextColor(...GOLD); doc.setFont('Helvetica','Bold');
+      doc.text('OLLEARIS',1,1.05);
+      doc.setFontSize(12); doc.setTextColor(255,255,255);
+      doc.text('ETIQUETA DE RESIDUO PELIGROSO',W/2,1.15,{align:'center'});
+      doc.setDrawColor(...NAVY); doc.setLineWidth(0.05); doc.rect(0.5,0.5,W-1,13,'S');
+      doc.setFontSize(9); doc.setTextColor(0,0,0); doc.setFont('Helvetica','Bold');
+      doc.text(`CÓDIGO LER: ${data.gestion_residuos?.codigo_ler||'-'}`,1,2.4);
+      doc.text(`DENOMINACIÓN: ${data.producto?.nombre_comercial||'-'}`,1,3.1);
+      doc.text(`CLASE ADR: ${data.almacenamiento_adq_adr?.clase_adr||'-'}`,1,3.8);
+      doc.setLineDash([0.1,0.1],0); doc.line(0.5,4.4,W-0.5,4.4); doc.setLineDash([],0);
+      doc.text(`ADVERTENCIA: ${data.clp?.palabra_advertencia||'NINGUNA'}`,1,5.1);
+      doc.setFont('Helvetica','Normal'); doc.setFontSize(8);
+      doc.text(doc.splitTextToSize(`Indicaciones H: ${(data.clp?.frases_h||[]).join(', ')}`,W-2),1,5.7);
+      doc.text(doc.splitTextToSize(`Consejos P: ${(data.clp?.frases_p||[]).join(', ')}`,W-2),1,7.1);
+      doc.setLineDash([0.1,0.1],0); doc.line(0.5,9.4,W-0.5,9.4); doc.setLineDash([],0);
+      doc.setFontSize(8); doc.setFont('Helvetica','Bold');
+      doc.text('DATOS DE TRAZABILIDAD (SAGE 200)',1,10.1);
+      doc.setFont('Helvetica','Normal');
+      doc.text(`Lote / Ubicación: ${lote||'Sin asignar'}`,1,10.8);
+      doc.text(`Operario: ${operario||'No especificado'}`,1,11.5);
+      doc.text(`Fecha: ${new Date().toLocaleDateString('es-ES')}`,1,12.2);
       doc.save(`Etiqueta_Residuo_${lote}_${Date.now()}.pdf`);
       showToast('Etiqueta de residuo generada');
     }
 
+    // ===== ETIQUETA IDENTIFICACION 20x14cm =====
     function generarEtiquetaIdentificacion(data, operario, lote) {
-      if(!data) return;
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF({ orientation: 'landscape', unit: 'cm', format: [20, 14] });
-      
-      const labelW = 20;
-
-      doc.setFillColor(34, 139, 34);
-      doc.rect(0.5, 0.5, labelW - 1, 1.2, 'F');
-      doc.setFontSize(14);
-      doc.setTextColor(255, 255, 255);
-      doc.setFont("Helvetica", "Bold");
-      doc.text("IDENTIFICACIÓN DE PRODUCTO / MATERIA PRIMA", labelW / 2, 1.2, { align: "center" });
-
-      doc.setDrawColor(34, 139, 34);
-      doc.setLineWidth(0.04);
-      doc.rect(0.5, 0.5, labelW - 1, 13, 'S');
-
-      doc.setFontSize(10);
-      doc.setTextColor(0, 0, 0);
-      doc.text(`PRODUCTO: ${data.producto?.nombre_comercial || '-'}`, 1, 2.5);
-      doc.text(`COMPOSICIÓN: ${(data.producto?.componentes_activos || []).join(', ')}`, 1, 3.2);
-      doc.text(`ESTADO CLP: ${data.verificacion_etiqueta?.conforme ? 'CONFORME' : 'REVISIÓN REQUERIDA'}`, 1, 3.9);
-
-      doc.setLineDash([0.1, 0.1], 0);
-      doc.line(0.5, 4.5, labelW - 0.5, 4.5);
-      doc.setLineDash([], 0);
-
-      doc.text(`PALABRA ADVERTENCIA: ${data.clp?.palabra_advertencia || 'NINGUNA'}`, 1, 5.2);
-      doc.setFont("Helvetica", "Normal");
-      doc.setFontSize(8);
-
-      let hText = `Frases H: ${(data.clp?.frases_h || []).join(', ')}`;
-      let splitH = doc.splitTextToSize(hText, labelW - 2);
-      doc.text(splitH, 1, 5.8);
-
-      let pText = `Frases P: ${(data.clp?.frases_p || []).join(', ')}`;
-      let splitP = doc.splitTextToSize(pText, labelW - 2);
-      doc.text(splitP, 1, 7.2);
-
-      doc.setLineDash([0.1, 0.1], 0);
-      doc.line(0.5, 9.5, labelW - 0.5, 9.5);
-      doc.setLineDash([], 0);
-
-      doc.setFontSize(9);
-      doc.setFont("Helvetica", "Bold");
-      doc.text("CONTROL DE CALIDAD E INVENTARIO", 1, 10.2);
-      doc.setFont("Helvetica", "Normal");
-      doc.text(`Partida / Lote Sage: ${lote || 'Sin asignar'}`, 1, 10.9);
-      doc.text(`Validado Por: ${operario || 'No especificado'}`, 1, 11.6);
-      doc.text(`Fecha Validación: ${new Date().toLocaleDateString('es-ES')}`, 1, 12.3);
-
+      if (!data||!window.jspdf) return;
+      const {jsPDF}=window.jspdf;
+      const doc=new jsPDF({orientation:'landscape',unit:'cm',format:[20,14]});
+      const W=20; const NAVY=[27,58,107]; const GOLD=[212,175,55];
+      doc.setFillColor(...NAVY); doc.rect(0.5,0.5,W-1,1.4,'F');
+      doc.setFontSize(7); doc.setTextColor(...GOLD); doc.setFont('Helvetica','Bold');
+      doc.text('OLLEARIS',1,1.05);
+      doc.setFontSize(11); doc.setTextColor(255,255,255);
+      doc.text('IDENTIFICACIÓN DE PRODUCTO / MATERIA PRIMA',W/2,1.15,{align:'center'});
+      doc.setDrawColor(...NAVY); doc.setLineWidth(0.05); doc.rect(0.5,0.5,W-1,13,'S');
+      doc.setFontSize(9); doc.setTextColor(0,0,0); doc.setFont('Helvetica','Bold');
+      doc.text(`PRODUCTO: ${data.producto?.nombre_comercial||'-'}`,1,2.4);
+      doc.text(`COMPOSICIÓN: ${(data.producto?.componentes_activos||[]).join(', ')}`,1,3.1);
+      doc.text(`ESTADO CLP: ${data.verificacion_etiqueta?.conforme?'CONFORME':'REVISIÓN REQUERIDA'}`,1,3.8);
+      doc.setLineDash([0.1,0.1],0); doc.line(0.5,4.4,W-0.5,4.4); doc.setLineDash([],0);
+      doc.text(`ADVERTENCIA: ${data.clp?.palabra_advertencia||'NINGUNA'}`,1,5.1);
+      doc.setFont('Helvetica','Normal'); doc.setFontSize(8);
+      doc.text(doc.splitTextToSize(`Frases H: ${(data.clp?.frases_h||[]).join(', ')}`,W-2),1,5.7);
+      doc.text(doc.splitTextToSize(`Frases P: ${(data.clp?.frases_p||[]).join(', ')}`,W-2),1,7.1);
+      doc.setLineDash([0.1,0.1],0); doc.line(0.5,9.4,W-0.5,9.4); doc.setLineDash([],0);
+      doc.setFontSize(8); doc.setFont('Helvetica','Bold');
+      doc.text('CONTROL DE CALIDAD E INVENTARIO (SAGE 200)',1,10.1);
+      doc.setFont('Helvetica','Normal');
+      doc.text(`Partida / Lote Sage: ${lote||'Sin asignar'}`,1,10.8);
+      doc.text(`Validado por: ${operario||'No especificado'}`,1,11.5);
+      doc.text(`Fecha: ${new Date().toLocaleDateString('es-ES')}`,1,12.2);
       doc.save(`Etiqueta_Identificacion_${lote}_${Date.now()}.pdf`);
-      showToast('Etiqueta de identificación de producto generada');
+      showToast('Etiqueta de producto generada');
     }
 
-    // ===== GESTIÓN E HISTORIAL DE REGISTROS =====
-    function saveToHistorial(tipo, idElemento, operario, lote, rawData) {
-      const nuevoRegistro = {
-        id: Date.now(),
-        fecha: new Date().toLocaleString('es-ES'),
-        tipo: tipo,
-        elemento: idElemento,
-        operario: operario,
-        lote: lote,
-        data: rawData
-      };
-      state.historial.unshift(nuevoRegistro);
-      localStorage.setItem('gq_historial', JSON.stringify(state.historial));
+    // ===== HISTORIAL =====
+    function saveToHistorial(tipo, elem, operario, lote, data) {
+      state.historial.unshift({id:Date.now(),fecha:new Date().toLocaleString('es-ES'),tipo,elemento:elem,operario,lote,data});
+      localStorage.setItem('gq_historial',JSON.stringify(state.historial));
     }
-
     function renderHistorial() {
-      const container = document.getElementById('historial-list');
-      if (state.historial.length === 0) {
-        container.innerHTML = `<div class="card" style="text-align:center; color:var(--text-muted)">Ningún análisis registrado en este dispositivo.</div>`;
-        return;
-      }
-
-      container.innerHTML = state.historial.map(reg => `
-        <div class="card" style="position:relative; padding-bottom:12px;">
-          <div class="card-title" style="margin-bottom:4px; color:var(--primary); font-weight:800;">${reg.tipo}</div>
-          <div style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">${reg.fecha} · Op: ${reg.operario}</div>
-          <div style="font-size:14px; font-weight:700; margin-bottom:4px;">${reg.elemento}</div>
-          <div style="font-size:12px; color:#4a5568; margin-bottom:10px;">Lote/Referencia: <strong>${reg.lote}</strong></div>
-          <div style="display:flex; gap:8px;">
-            <button class="btn btn-secondary" style="min-height:36px; font-size:12px; padding:0 12px; margin-bottom:0;" onclick='descargarHistorialPDF(${reg.id})'>📄 PDF</button>
-            <button class="btn btn-secondary" style="min-height:36px; font-size:12px; padding:0 12px; margin-bottom:0;" onclick='reimprimirHistorialEtiqueta(${reg.id})'>🏷️ Etiqueta</button>
+      const c=document.getElementById('historial-list');
+      if (!state.historial.length) { c.innerHTML=`<div class="card" style="text-align:center;color:var(--text-muted)">Ningún análisis registrado.</div>`; return; }
+      c.innerHTML=state.historial.map(r=>`
+        <div class="card" style="padding-bottom:12px;">
+          <div class="card-title" style="color:var(--primary);font-weight:800;">${r.tipo}</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px;">${r.fecha} · Op: ${r.operario}</div>
+          <div style="font-size:14px;font-weight:700;margin-bottom:4px;">${r.elemento}</div>
+          <div style="font-size:12px;color:#4a5568;margin-bottom:10px;">Lote: <strong>${r.lote}</strong></div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-secondary" style="min-height:36px;font-size:12px;padding:0 12px;margin-bottom:0;" onclick='descargarHistorialPDF(${r.id})'>📄 PDF</button>
+            <button class="btn btn-secondary" style="min-height:36px;font-size:12px;padding:0 12px;margin-bottom:0;" onclick='reimprimirHistorialEtiqueta(${r.id})'>🏷️ Etiqueta</button>
           </div>
-        </div>
-      `).join('');
+        </div>`).join('');
     }
-
     function clearHistorial() {
-      if(confirm("¿Estás seguro de que deseas eliminar permanentemente todos los registros del historial local?")) {
-        state.historial = [];
-        localStorage.removeItem('gq_historial');
-        renderHistorial();
-        showToast("Historial eliminado", "ok");
-      }
+      if (confirm('¿Eliminar todos los registros?')) { state.historial=[]; localStorage.removeItem('gq_historial'); renderHistorial(); showToast('Historial eliminado'); }
     }
-
-    function descargarHistorialPDF(id) {
-      const reg = state.historial.find(x => x.id === id);
-      if(reg) generarPDF(reg.data, reg.tipo, reg.operario, reg.lote);
-    }
-
-    function reimprimirHistorialEtiqueta(id) {
-      const reg = state.historial.find(x => x.id === id);
-      if(!reg) return;
-      if(reg.tipo.includes("Residuos")) {
-        generarEtiquetaResiduo(reg.data, reg.operario, reg.lote);
-      } else {
-        generarEtiquetaIdentificacion(reg.data, reg.operario, reg.lote);
-      }
-    }
+    function descargarHistorialPDF(id) { const r=state.historial.find(x=>x.id===id); if(r) generarPDF(r.data,r.tipo,r.operario,r.lote); }
+    function reimprimirHistorialEtiqueta(id) { const r=state.historial.find(x=>x.id===id); if(!r) return; if(r.tipo.includes('Residuos')) generarEtiquetaResiduo(r.data,r.operario,r.lote); else generarEtiquetaIdentificacion(r.data,r.operario,r.lote); }
   </script>
 </body>
 </html>
