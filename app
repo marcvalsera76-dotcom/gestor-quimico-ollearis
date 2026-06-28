@@ -1,6 +1,4 @@
-Mismo procedimiento de siempre: `index.html` → ✏️ Edit → seleccionar todo → borrar → pegar esto → Commit changes.
 
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
