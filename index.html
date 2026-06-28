@@ -735,7 +735,7 @@ Reglas operativas estrictas:
           </div>
           <div style="margin-bottom:8px;">
             <strong>Indicaciones de Peligro:</strong>
-            <ul style="padding-left:20px; font-size:13px; margin-top:4px;">
+          Pictogramas: ${data.clp.pictogramas_codigo.join(', ')}
               ${data.clp.frases_h.map(h => `<li><strong>${h}</strong></li>`).join('')}
             </ul>
           </div>
@@ -805,7 +805,7 @@ Reglas operativas estrictas:
           <div style="margin-bottom:8px;">
             <strong>Frases H:</strong>
             <ul style="padding-left:20px; font-size:13px; margin-top:4px;">
-              ${data.clp.frases_h.map(h => `<li><strong>${h}</strong></li>`).join('')}
+            Pictogramas obligatorios: ${data.clp.pictogramas_codigo.join(', ')}
             </ul>
           </div>
           <div>
