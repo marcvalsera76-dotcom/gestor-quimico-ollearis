@@ -730,9 +730,7 @@ Reglas operativas estrictas:
           <div style="font-weight:800; color:var(--primary); margin-bottom:8px;">
             Palabra de Advertencia: ${data.clp.palabra_advertencia}
           </div>
-          <div style="font-size:13px; color:var(--text-muted); margin-bottom:8px;">
-            Pictogramas: ${data.clp.pictogramas_codigo.join(', ')}
-          </div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">${renderPictogramasHTML(data.clp.pictogramas_codigo)}</div>
           <div style="margin-bottom:8px;">
             <strong>Indicaciones de Peligro:</strong>
           Pictogramas: ${data.clp.pictogramas_codigo.join(', ')}
