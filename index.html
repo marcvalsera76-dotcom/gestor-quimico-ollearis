@@ -410,6 +410,39 @@ Reglas operativas estrictas:
       'GHS08': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIj4KICA8cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0id2hpdGUiLz4KICA8cG9seWdvbiBwb2ludHM9IjEwMCw1IDE5NSwxMDAgMTAwLDE5NSA1LDEwMCIgZmlsbD0id2hpdGUiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iOCIvPgogIAogIDxlbGxpcHNlIGN4PSIxMDAiIGN5PSI3MiIgcng9IjE4IiByeT0iMjAiIGZpbGw9IiMzMzMiLz4KICA8cGF0aCBkPSJNNzUsOTUgTDEwMCw5MiBMMTI1LDk1IEwxMzAsMTUwIEwxMTAsMTUwIEwxMDUsMTIwIEw5NSwxMjAgTDkwLDE1MCBMNzAsMTUwIFoiIGZpbGw9IiMzMzMiLz4KICA8cGF0aCBkPSJNNjgsMTEwIEw4MCwxMDUgTDc4LDEzMCBMNjgsMTI4IFoiIGZpbGw9IiMzMzMiLz4KICA8cGF0aCBkPSJNMTMyLDExMCBMMTIwLDEwNSBMMTIyLDEzMCBMMTMyLDEyOCBaIiBmaWxsPSIjMzMzIi8+CiAgPHBhdGggZD0iTTgwLDEwNSBRNzAsODUgODAsNzUgUTkwLDY4IDEwMCw3MiIgc3Ryb2tlPSIjZTAwIiBzdHJva2Utd2lkdGg9IjUiIGZpbGw9Im5vbmUiLz4KCiAgPHBvbHlnb24gcG9pbnRzPSIxMDAsNSAxOTUsMTAwIDEwMCwxOTUgNSwxMDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iOCIvPgo8L3N2Zz4=',
       'GHS09': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIj4KICA8cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0id2hpdGUiLz4KICA8cG9seWdvbiBwb2ludHM9IjEwMCw1IDE5NSwxMDAgMTAwLDE5NSA1LDEwMCIgZmlsbD0id2hpdGUiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iOCIvPgogIAogIDxwYXRoIGQ9Ik0xMDAsNTUgUTExNSw2NSAxMjAsODAgUTEzMCw3NSAxMzUsODUgUTEyNSw5MCAxMjAsMTAwIFExMzAsMTEwIDEyNSwxMjUgUTExMCwxMTggMTAwLDEyNSBROTAsMTE4IDc1LDEyNSBRNzAsMTEwIDgwLDEwMCBRNzUsOTAgNjUsODUgUTcwLDc1IDgwLDgwIFE4NSw2NSAxMDAsNTUgWiIgZmlsbD0iIzA4MCIvPgogIDxlbGxpcHNlIGN4PSIxMDAiIGN5PSIxNDAiIHJ4PSIxNSIgcnk9IjgiIGZpbGw9IiMwNmEiLz4KICA8cGF0aCBkPSJNOTAsMTI1IFE4NSwxMzUgOTAsMTQzIiBzdHJva2U9IiMwNmEiIHN0cm9rZS13aWR0aD0iMyIgZmlsbD0ibm9uZSIvPgogIDxwYXRoIGQ9Ik0xMTAsMTI1IFExMTUsMTM1IDExMCwxNDMiIHN0cm9rZT0iIzA2YSIgc3Ryb2tlLXdpZHRoPSIzIiBmaWxsPSJub25lIi8+CgogIDxwb2x5Z29uIHBvaW50cz0iMTAwLDUgMTk1LDEwMCAxMDAsMTk1IDUsMTAwIiBmaWxsPSJub25lIiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjgiLz4KPC9zdmc+',
     };
+    const H_PHRASES = {
+      'H200':'Explosivo inestable','H201':'Explosivo; peligro de explosión en masa',
+      'H202':'Explosivo; grave peligro de proyección','H203':'Explosivo; peligro de incendio, onda expansiva o proyección',
+      'H204':'Peligro de incendio o de proyección','H205':'Peligro de explosión en masa en caso de incendio',
+      'H220':'Gas extremadamente inflamable','H221':'Gas inflamable',
+      'H222':'Aerosol extremadamente inflamable','H223':'Aerosol inflamable',
+      'H224':'Líquido y vapores extremadamente inflamables','H225':'Líquido y vapores muy inflamables',
+      'H226':'Líquidos y vapores inflamables','H228':'Sólido inflamable',
+      'H240':'Peligro de explosión en caso de calentamiento','H241':'Peligro de incendio o explosión al calentar',
+      'H242':'Peligro de incendio en caso de calentamiento','H250':'Se inflama espontáneamente en contacto con el aire',
+      'H260':'En contacto con agua desprende gases inflamables','H261':'En contacto con agua desprende gases inflamables',
+      'H270':'Puede provocar o agravar un incendio; comburente','H271':'Puede provocar un incendio o explosión; muy comburente',
+      'H272':'Puede agravar un incendio; comburente','H280':'Contiene gas a presión; peligro de explosión al calentar',
+      'H290':'Puede ser corrosivo para los metales','H300':'Mortal en caso de ingestión',
+      'H301':'Tóxico en caso de ingestión','H302':'Nocivo en caso de ingestión',
+      'H304':'Puede ser mortal si se ingiere y penetra en vías respiratorias',
+      'H310':'Mortal en contacto con la piel','H311':'Tóxico en contacto con la piel',
+      'H312':'Nocivo en contacto con la piel','H314':'Provoca quemaduras graves en piel y lesiones oculares graves',
+      'H315':'Provoca irritación cutánea','H317':'Puede provocar reacción alérgica en la piel',
+      'H318':'Provoca lesiones oculares graves','H319':'Provoca irritación ocular grave',
+      'H330':'Mortal en caso de inhalación','H331':'Tóxico en caso de inhalación',
+      'H332':'Nocivo en caso de inhalación','H334':'Puede provocar síntomas de alergia o asma en caso de inhalación',
+      'H335':'Puede irritar las vías respiratorias','H336':'Puede provocar somnolencia o vértigo',
+      'H340':'Puede provocar defectos genéticos','H350':'Puede provocar cáncer',
+      'H351':'Se sospecha que provoca cáncer','H360':'Puede perjudicar la fertilidad o dañar al feto',
+      'H361':'Se sospecha que perjudica la fertilidad o daña al feto','H361d':'Se sospecha que daña al feto',
+      'H370':'Provoca daños en los órganos','H371':'Puede provocar daños en los órganos',
+      'H372':'Provoca daños en los órganos tras exposiciones prolongadas','H373':'Puede provocar daños en los órganos tras exposición prolongada',
+      'H400':'Muy tóxico para organismos acuáticos','H401':'Tóxico para organismos acuáticos',
+      'H410':'Muy tóxico para organismos acuáticos, con efectos duraderos','H411':'Tóxico para organismos acuáticos, con efectos duraderos',
+      'H412':'Nocivo para organismos acuáticos, con efectos duraderos','H413':'Puede ser nocivo para organismos acuáticos, con efectos duraderos'
+    };
+
     // ===== CONTROL DE ESTADO GLOBAL =====
     const state = {
       images: { res: null, etq: null },
@@ -1005,157 +1038,184 @@ Reglas operativas estrictas:
     }
 
     // ===== ETIQUETA IMPRIMIBLE 20x14cm - RESIDUOS (RD 833/1988 mod. · Orden MAM/304/2002 · APQ) =====
-    function generarEtiquetaResiduo(data, operario, lote) {
-      if (!data) {
-        showToast('No hay datos de análisis para generar la etiqueta', 'err');
-        return;
-      }
-      if (!window.jspdf || !window.jspdf.jsPDF) {
-        showToast('No se pudo cargar el motor de PDF', 'err');
-        return;
-      }
+    function generarEtiquetaResiduo(data,operario,lote){
+      if(!data||!window.jspdf)return;
+      const {jsPDF}=window.jspdf;
+      const doc=new jsPDF({orientation:'landscape',unit:'mm',format:[200,140]});
+      const W=200,H=140;
+      const NAVY=[27,58,107],GOLD=[212,175,55],WHITE=[255,255,255],BLACK=[0,0,0];
 
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+      // Borde exterior
+      doc.setDrawColor(...NAVY);doc.setLineWidth(0.8);doc.rect(3,3,W-6,H-6,'S');
 
-      const labelX = 5, labelY = 10, labelW = 200, labelH = 140;
+      // Header navy
+      doc.setFillColor(...NAVY);doc.rect(3,3,W-6,18,'F');
 
-      doc.setDrawColor(150, 150, 150);
-      doc.setLineWidth(0.3);
-      doc.rect(labelX, labelY, labelW, labelH);
+      // Logo en header
+      try{doc.addImage(LOGO_B64,'PNG',5,4,14,14);}catch(e){}
 
-      let cursorY = labelY + 8;
+      // Texto OLLEARIS en gold
+      doc.setFontSize(8);doc.setTextColor(...GOLD);doc.setFont('Helvetica','Bold');
+      doc.text('OLLEARIS',21,10);
+      doc.setFontSize(6);doc.setTextColor(200,220,255);doc.setFont('Helvetica','Normal');
+      doc.text('Almacenamiento de productos químicos',21,15);
 
-      doc.setFontSize(9);
-      doc.setTextColor(100, 100, 100);
-      doc.text('OLLEARIS · IDENTIFICACIÓN DE RESIDUO (RD 656/2017 · APQ)', labelX + 6, cursorY);
-      cursorY += 8;
+      // Título etiqueta centrado en blanco
+      doc.setFontSize(13);doc.setTextColor(...WHITE);doc.setFont('Helvetica','Bold');
+      doc.text('ETIQUETA DE RESIDUO PELIGROSO',W/2,13,{align:'center'});
+      doc.setFontSize(7);doc.text('RD 833/1988 · CLP/GHS · ADR 2026',W/2,19,{align:'center'});
 
-      if (data.gestion_residuos?.peligroso) {
-        doc.setFillColor(255, 61, 0);
-        doc.rect(labelX + 6, cursorY, 65, 10, 'F');
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(12);
-        doc.setFont(undefined, 'bold');
-        doc.text('RESIDUO PELIGROSO', labelX + 9, cursorY + 7);
-        doc.setFont(undefined, 'normal');
-        cursorY += 15;
-      }
+      // Banda roja RESIDUO PELIGROSO
+      doc.setFillColor(180,0,0);doc.rect(3,21,W-6,8,'F');
+      doc.setFontSize(10);doc.setTextColor(...WHITE);doc.setFont('Helvetica','Bold');
+      doc.text('⚠ RESIDUO PELIGROSO',W/2,27,{align:'center'});
 
-      doc.setFontSize(15);
-      doc.setTextColor(0, 0, 0);
-      doc.setFont(undefined, 'bold');
-      doc.text(data.producto?.nombre_comercial || 'Residuo industrial', labelX + 6, cursorY, { maxWidth: labelW - 12 });
-      doc.setFont(undefined, 'normal');
-      cursorY += 9;
+      // Datos principales
+      doc.setTextColor(...BLACK);doc.setFont('Helvetica','Bold');doc.setFontSize(9);
+      doc.text('DENOMINACIÓN:',5,36);
+      doc.setFont('Helvetica','Normal');
+      doc.text(data.producto?.nombre_comercial||'-',48,36);
 
-      doc.setFontSize(18);
-      doc.setFont('courier', 'bold');
-      doc.text(`LER: ${data.gestion_residuos?.codigo_ler || '-'}`, labelX + 6, cursorY);
-      doc.setFont(undefined, 'normal');
-      cursorY += 7;
+      doc.setFont('Helvetica','Bold');
+      doc.text('CÓDIGO LER:',5,43);
+      doc.setFont('Helvetica','Bold');doc.setFontSize(11);doc.setTextColor(180,0,0);
+      doc.text(data.gestion_residuos?.codigo_ler||'-',38,43);
+      doc.setFontSize(8);doc.setTextColor(60,60,60);doc.setFont('Helvetica','Normal');
+      const lerDesc=doc.splitTextToSize(data.gestion_residuos?.descripcion_ler||'',150);
+      doc.text(lerDesc,38,48);
 
-      doc.setFontSize(9);
-      doc.text(data.gestion_residuos?.descripcion_ler || '', labelX + 6, cursorY, { maxWidth: labelW - 12 });
-      cursorY += 11;
+      doc.setTextColor(...BLACK);doc.setFont('Helvetica','Bold');doc.setFontSize(9);
+      doc.text('CLASE ADR:',5,57);
+      doc.setFont('Helvetica','Normal');
+      doc.text(data.almacenamiento_adq_adr?.clase_adr||'-',38,57);
 
-      cursorY = dibujarFilaPictogramas(doc, data.clp?.pictogramas_codigo, labelX + 6, cursorY);
+      // Línea separadora
+      doc.setDrawColor(...NAVY);doc.setLineWidth(0.3);doc.line(3,61,W-3,61);
 
-      doc.setFontSize(8);
-      doc.setFont(undefined, 'bold');
-      doc.text('Indicaciones de peligro:', labelX + 6, cursorY);
-      doc.setFont(undefined, 'normal');
-      cursorY += 5;
-      doc.text((data.clp?.frases_h || []).join('   '), labelX + 6, cursorY, { maxWidth: labelW - 12 });
-      cursorY += 10;
+      // Advertencia
+      const adv=data.clp?.palabra_advertencia||'';
+      doc.setFont('Helvetica','Bold');doc.setFontSize(9);
+      doc.setTextColor(adv==='PELIGRO'?180:150,0,0);
+      doc.text('⚠ '+adv,5,67);
 
-      doc.setFontSize(8);
-      doc.text(`Clase ADR: ${data.almacenamiento_adq_adr?.clase_adr || '-'}`, labelX + 6, cursorY);
+      // Pictogramas GHS
+      const pics=data.clp?.pictogramas_codigo||[];
+      pics.forEach((c,i)=>{
+        const k=c.toUpperCase().trim();
+        const b64=GHS_B64[k];
+        if(b64){try{doc.addImage(b64,'SVG',5+i*18,69,15,15);}catch(e){
+          doc.setFontSize(5);doc.setTextColor(...BLACK);doc.text(k,5+i*18+7,79,{align:'center'});
+        }}
+      });
 
-      doc.setFontSize(8);
-      doc.text(
-        `Lote/Partida: ${lote || 'Sin asignar'}   Operario: ${operario || '-'}   Fecha: ${new Date().toLocaleDateString('es-ES')}`,
-        labelX + 6, labelY + labelH - 6, { maxWidth: labelW - 12 }
-      );
+      // Frases H con descripción completa
+      doc.setTextColor(...BLACK);doc.setFont('Helvetica','Bold');doc.setFontSize(7.5);
+      doc.text('Indicaciones de peligro:',5,88);
+      doc.setFont('Helvetica','Normal');doc.setFontSize(6.5);
+      const hCodes=data.clp?.frases_h||[];
+      const hTexts=hCodes.map(h=>{const k=h.trim().toUpperCase();return H_PHRASES[k]?h+': '+H_PHRASES[k]:h;});
+      const hStr=doc.splitTextToSize(hTexts.join('  |  '),W-10);
+      doc.text(hStr,5,93);
 
-      const nombreLimpio = (data.producto?.nombre_comercial || 'residuo').replace(/[^a-z0-9]+/gi, '_').toLowerCase();
-      doc.save(`Etiqueta_Residuo_${nombreLimpio}_${Date.now()}.pdf`);
-      showToast('Etiqueta generada (20x14cm) · resto de la hoja A4 en blanco');
+      // Línea separadora trazabilidad
+      doc.setDrawColor(...NAVY);doc.setLineWidth(0.3);doc.line(3,112,W-3,112);
+
+      // Trazabilidad Sage 200
+      doc.setFillColor(240,244,250);doc.rect(3,112,W-6,H-115,'F');
+      doc.setFont('Helvetica','Bold');doc.setFontSize(7);doc.setTextColor(...NAVY);
+      doc.text('TRAZABILIDAD SAGE 200',W/2,118,{align:'center'});
+      doc.setFont('Helvetica','Normal');doc.setTextColor(...BLACK);
+      doc.text('Lote/Partida: '+(lote||'Sin asignar'),10,124);
+      doc.text('Operario: '+(operario||'No especificado'),80,124);
+      doc.text('Fecha: '+new Date().toLocaleDateString('es-ES'),160,124);
+
+      doc.save('Etiqueta_Residuo_'+((lote||'Sin_asignar').replace(/[^a-z0-9]+/gi,'_'))+'_'+Date.now()+'.pdf');
+      showToast('Etiqueta generada');
     }
 
     // ===== ETIQUETA IMPRIMIBLE 20x14cm - IDENTIFICACIÓN CLP (Reglamento CE 1272/2008) =====
-    function generarEtiquetaIdentificacion(data, operario, lote) {
-      if (!data) {
-        showToast('No hay datos de análisis para generar la etiqueta', 'err');
-        return;
-      }
-      if (!window.jspdf || !window.jspdf.jsPDF) {
-        showToast('No se pudo cargar el motor de PDF', 'err');
-        return;
-      }
+    function generarEtiquetaIdentificacion(data,operario,lote){
+      if(!data||!window.jspdf)return;
+      const {jsPDF}=window.jspdf;
+      const doc=new jsPDF({orientation:'landscape',unit:'mm',format:[200,140]});
+      const W=200,H=140;
+      const NAVY=[27,58,107],GOLD=[212,175,55],WHITE=[255,255,255],BLACK=[0,0,0];
 
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+      // Borde exterior
+      doc.setDrawColor(...NAVY);doc.setLineWidth(0.8);doc.rect(3,3,W-6,H-6,'S');
 
-      const labelX = 5, labelY = 10, labelW = 200, labelH = 140;
+      // Header navy
+      doc.setFillColor(...NAVY);doc.rect(3,3,W-6,18,'F');
 
-      doc.setDrawColor(150, 150, 150);
-      doc.setLineWidth(0.3);
-      doc.rect(labelX, labelY, labelW, labelH);
+      // Logo en header
+      try{doc.addImage(LOGO_B64,'PNG',5,4,14,14);}catch(e){}
 
-      let cursorY = labelY + 8;
+      // Texto OLLEARIS en gold
+      doc.setFontSize(8);doc.setTextColor(...GOLD);doc.setFont('Helvetica','Bold');
+      doc.text('OLLEARIS',21,10);
+      doc.setFontSize(6);doc.setTextColor(200,220,255);doc.setFont('Helvetica','Normal');
+      doc.text('Almacenamiento de productos químicos',21,15);
 
-      doc.setFontSize(9);
-      doc.setTextColor(100, 100, 100);
-      doc.text('OLLEARIS · ETIQUETADO CLP (REGLAMENTO CE 1272/2008)', labelX + 6, cursorY);
-      cursorY += 9;
+      // Título
+      doc.setFontSize(12);doc.setTextColor(...WHITE);doc.setFont('Helvetica','Bold');
+      doc.text('IDENTIFICACIÓN DE PRODUCTO / MATERIA PRIMA',W/2,13,{align:'center'});
+      doc.setFontSize(7);doc.text('CLP/GHS CE 1272/2008 · APQ RD 656/2017',W/2,19,{align:'center'});
 
-      doc.setFontSize(15);
-      doc.setTextColor(0, 0, 0);
-      doc.setFont(undefined, 'bold');
-      doc.text(data.producto?.nombre_comercial || 'Producto químico', labelX + 6, cursorY, { maxWidth: labelW - 12 });
-      doc.setFont(undefined, 'normal');
-      cursorY += 10;
+      // Datos
+      doc.setTextColor(...BLACK);doc.setFont('Helvetica','Bold');doc.setFontSize(9);
+      doc.text('PRODUCTO:',5,30);
+      doc.setFont('Helvetica','Bold');doc.setFontSize(11);doc.setTextColor(...NAVY);
+      doc.text(data.producto?.nombre_comercial||'-',38,30);
 
-      const palabra = (data.clp?.palabra_advertencia || 'NINGUNA').toUpperCase();
-      if (palabra !== 'NINGUNA') {
-        if (palabra === 'PELIGRO') doc.setFillColor(255, 61, 0); else doc.setFillColor(255, 145, 0);
-        doc.rect(labelX + 6, cursorY, 50, 9, 'F');
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(11);
-        doc.setFont(undefined, 'bold');
-        doc.text(palabra, labelX + 9, cursorY + 6.5);
-        doc.setFont(undefined, 'normal');
-        doc.setTextColor(0, 0, 0);
-        cursorY += 13;
-      }
+      doc.setFont('Helvetica','Normal');doc.setFontSize(8);doc.setTextColor(...BLACK);
+      const comps=(data.producto?.componentes_activos||[]).join(', ');
+      doc.text('Composición: '+comps,5,37);
 
-      cursorY = dibujarFilaPictogramas(doc, data.clp?.pictogramas_codigo, labelX + 6, cursorY);
+      const conforme=data.verificacion_etiqueta?.conforme;
+      doc.setFont('Helvetica','Bold');doc.setFontSize(8);
+      doc.setTextColor(conforme?0:180,conforme?150:0,0);
+      doc.text('Estado CLP: '+(conforme?'✓ CONFORME':'✗ REVISIÓN REQUERIDA'),5,44);
 
-      doc.setFontSize(8);
-      doc.setFont(undefined, 'bold');
-      doc.text('Indicaciones de peligro (H):', labelX + 6, cursorY);
-      doc.setFont(undefined, 'normal');
-      cursorY += 5;
-      doc.text((data.clp?.frases_h || []).join('   '), labelX + 6, cursorY, { maxWidth: labelW - 12 });
-      cursorY += 10;
+      doc.setDrawColor(...NAVY);doc.setLineWidth(0.3);doc.line(3,47,W-3,47);
 
-      doc.setFontSize(8);
-      doc.setFont(undefined, 'bold');
-      doc.text('Consejos de prudencia (P):', labelX + 6, cursorY);
-      doc.setFont(undefined, 'normal');
-      cursorY += 5;
-      doc.text((data.clp?.frases_p || []).join('   '), labelX + 6, cursorY, { maxWidth: labelW - 12 });
+      // Advertencia
+      const adv=data.clp?.palabra_advertencia||'';
+      doc.setFont('Helvetica','Bold');doc.setFontSize(9);
+      doc.setTextColor(adv==='PELIGRO'?180:150,0,0);
+      doc.text('⚠ '+adv,5,54);
 
-      doc.setFontSize(8);
-      doc.text(
-        `Lote/Partida: ${lote || 'Sin asignar'}   Operario: ${operario || '-'}   Fecha: ${new Date().toLocaleDateString('es-ES')}`,
-        labelX + 6, labelY + labelH - 6, { maxWidth: labelW - 12 }
-      );
+      // Pictogramas
+      const pics=data.clp?.pictogramas_codigo||[];
+      pics.forEach((c,i)=>{
+        const k=c.toUpperCase().trim();
+        const b64=GHS_B64[k];
+        if(b64){try{doc.addImage(b64,'SVG',5+i*18,56,15,15);}catch(e){
+          doc.setFontSize(5);doc.setTextColor(...BLACK);doc.text(k,5+i*18+7,65,{align:'center'});
+        }}
+      });
 
-      const nombreLimpio = (data.producto?.nombre_comercial || 'producto').replace(/[^a-z0-9]+/gi, '_').toLowerCase();
-      doc.save(`Etiqueta_Identificacion_${nombreLimpio}_${Date.now()}.pdf`);
-      showToast('Etiqueta generada (20x14cm) · resto de la hoja A4 en blanco');
+      // Frases H con descripción
+      doc.setTextColor(...BLACK);doc.setFont('Helvetica','Bold');doc.setFontSize(7.5);
+      doc.text('Indicaciones de peligro:',5,75);
+      doc.setFont('Helvetica','Normal');doc.setFontSize(6.5);
+      const hCodes=data.clp?.frases_h||[];
+      const hTexts=hCodes.map(h=>{const k=h.trim().toUpperCase();return H_PHRASES[k]?h+': '+H_PHRASES[k]:h;});
+      const hStr=doc.splitTextToSize(hTexts.join('  |  '),W-10);
+      doc.text(hStr,5,80);
+
+      doc.setDrawColor(...NAVY);doc.setLineWidth(0.3);doc.line(3,108,W-3,108);
+
+      // Trazabilidad
+      doc.setFillColor(240,244,250);doc.rect(3,108,W-6,H-111,'F');
+      doc.setFont('Helvetica','Bold');doc.setFontSize(7);doc.setTextColor(...NAVY);
+      doc.text('CONTROL CALIDAD · SAGE 200',W/2,114,{align:'center'});
+      doc.setFont('Helvetica','Normal');doc.setTextColor(...BLACK);
+      doc.text('Lote Sage: '+(lote||'Sin asignar'),10,120);
+      doc.text('Validado: '+(operario||'No especificado'),80,120);
+      doc.text('Fecha: '+new Date().toLocaleDateString('es-ES'),160,120);
+
+      doc.save('Etiqueta_Identificacion_'+((lote||'Sin_asignar').replace(/[^a-z0-9]+/gi,'_'))+'_'+Date.now()+'.pdf');
+      showToast('Etiqueta generada');
     }
 
     // ===== HISTORIAL LOCAL =====
