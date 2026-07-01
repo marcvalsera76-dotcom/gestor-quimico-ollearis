@@ -14,7 +14,6 @@
   <style>
     :root {
       --primary: #1B3A6B;
-      --gold: #D4AF37;
       --primary-dark: #0F2447;
       --bg-app: #f0f4f8;
       --surface: #ffffff;
@@ -39,6 +38,7 @@
       -webkit-font-smoothing: antialiased; 
     }
 
+    /* ===== HEADER ===== */
     .header { 
       background: var(--primary); 
       padding: 20px 16px 24px; 
@@ -50,7 +50,7 @@
     .logo { 
       width: 46px; height: 46px; background: #fff; border-radius: 12px; 
       display: flex; align-items: center; justify-content: center; 
-      font-size: 24px; font-weight: 900; color: var(--primary); flex-shrink: 0; 
+      flex-shrink: 0; overflow: hidden;
     }
     .header-titles h1 { font-size: 22px; font-weight: 900; letter-spacing: 0.5px; line-height: 1.1; }
     .header-titles p { font-size: 11px; color: rgba(255,255,255,0.8); margin-top: 3px; font-weight: 600; }
@@ -63,12 +63,15 @@
     }
     .operator-box select option { color: var(--text-main); }
 
+    /* ===== CONTENT ===== */
     .content { padding: 16px; max-width: 600px; margin: 0 auto; }
     .section-title { font-size: 22px; font-weight: 800; color: var(--primary); margin: 8px 0 16px; }
 
+    /* ===== CARDS ===== */
     .card { background: var(--surface); border-radius: 16px; padding: 18px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
     .card-title { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 12px; }
 
+    /* ===== FORM INPUTS ===== */
     input[type=text], input[type=password], textarea, select {
       width: 100%; background: #f8f9fa; border: 1.5px solid var(--border); border-radius: 12px; 
       color: var(--text-main); padding: 14px 16px; font-size: 16px; outline: none; 
@@ -77,6 +80,7 @@
     input:focus, textarea:focus, select:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 3px rgba(27,58,107,0.15); }
     textarea { min-height: 120px; resize: vertical; font-family: inherit; }
 
+    /* ===== BUTTONS ===== */
     .btn { 
       width: 100%; min-height: 54px; border: none; border-radius: 14px; font-size: 16px; font-weight: 800; 
       cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; 
@@ -89,6 +93,7 @@
     .btn-secondary { background: #e2e8f0; color: var(--primary); }
     .btn-danger { background: var(--danger); color: #fff; }
 
+    /* ===== MODE SELECTOR ===== */
     .mode-sel { display: flex; gap: 8px; margin-bottom: 16px; background: #e2e8f0; padding: 4px; border-radius: 14px; }
     .mode-btn { 
       flex: 1; padding: 12px; background: transparent; border: none; border-radius: 10px; 
@@ -96,6 +101,7 @@
     }
     .mode-btn.on { background: var(--surface); color: var(--primary); box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
 
+    /* ===== UPLOAD AREA ===== */
     .upload-area { 
       background: #f8f9fa; border: 2px dashed #cbd5e0; border-radius: 16px; 
       padding: 32px 20px; text-align: center; margin-bottom: 16px; position: relative; cursor: pointer;
@@ -105,11 +111,13 @@
     .upload-title { font-size: 15px; font-weight: 700; color: #4a5568; margin-bottom: 4px; }
     .upload-sub { font-size: 12px; color: var(--text-muted); }
     .upload-preview { width: 100%; max-height: 220px; object-fit: contain; border-radius: 12px; display: none; }
+    
     .upload-area.has-image .upload-icon, 
     .upload-area.has-image .upload-title, 
     .upload-area.has-image .upload-sub { display: none; }
     .upload-area.has-image .upload-preview { display: block; }
 
+    /* ===== CAMERA GRID ===== */
     .cam-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
     .cam-btn { 
       position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; 
@@ -121,6 +129,7 @@
     .cam-btn .icon { font-size: 26px; }
     .cam-btn .txt { font-size: 13px; font-weight: 700; color: #4a5568; }
 
+    /* ===== TOGGLE ROW ===== */
     .toggle-row { 
       display: flex; justify-content: space-between; align-items: center; 
       background: var(--surface); border-radius: 14px; padding: 16px; margin-bottom: 16px; 
@@ -139,6 +148,7 @@
     input:checked + .slider { background: var(--primary); }
     input:checked + .slider:before { transform: translateX(24px); }
 
+    /* ===== TOAST ===== */
     .toast { 
       position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); 
       background: var(--text-main); color: #fff; border-radius: 12px; padding: 14px 24px; 
@@ -149,6 +159,7 @@
     .toast.ok { border-left: 4px solid var(--success); }
     .toast.err { border-left: 4px solid var(--danger); }
 
+    /* ===== BOTTOM NAV ===== */
     .bottom-nav { 
       display: flex; position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); 
       border-top: 1px solid var(--border); z-index: 200; padding-bottom: env(safe-area-inset-bottom, 0); 
@@ -165,18 +176,22 @@
       width: 32px; height: 3px; background: var(--primary); border-radius: 0 0 3px 3px; 
     }
     .nav-icon { font-size: 22px; }
+
     .hidden { display: none !important; }
+
     @supports(padding: max(0px)) {
       body { padding-bottom: max(100px, env(safe-area-inset-bottom)); }
     }
   </style>
 </head>
 <body>
+
   <div id="toast" class="toast"></div>
+
   <div class="header">
     <div class="header-top">
       <div class="header-brand">
-        <img class="logo-img" src="LOGO_AQUI" alt="Ollearis" style="width:46px;height:46px;object-fit:contain;flex-shrink:0;">
+        <div class="logo"><img id="logo-img" src="" alt="Ollearis" style="width:42px;height:42px;object-fit:contain;"></div>
         <div class="header-titles">
           <h1>GESTOR QUÍMICO</h1>
           <p>OLLEARIS · LER · CLP · GHS · ADR 2026</p>
@@ -195,22 +210,29 @@
       </div>
     </div>
   </div>
+
   <div class="content">
+
     <div id="tab-residuos" class="tab-content">
       <div class="section-title">Clasificación de residuos</div>
+
       <div class="card">
         <div class="card-title">Configuración de Seguridad</div>
-        <input type="password" id="apiKey" placeholder="Clave API Gemini (AIza...)" autocomplete="off" spellcheck="false" autocapitalize="off" oninput="autoSaveApiKey()">
+        <input type="password" id="apiKey" placeholder="Clave API Gemini (AIza...)" autocomplete="off" spellcheck="false" autocapitalize="off" oninput="autoSaveApiKey()" onchange="autoSaveApiKey()" onblur="autoSaveApiKey()">
+        <button onclick="guardarClaveManual()" style="width:100%;min-height:44px;background:var(--primary);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer;margin-bottom:8px;">💾 Guardar Clave API</button>
         <div id="keyStatus" style="font-size:12px; font-weight:600; color:var(--text-muted)">✗ Clave requerida</div>
       </div>
+
       <div class="card">
         <div class="card-title">Trazabilidad (Sage 200)</div>
         <input type="text" id="res-lote" placeholder="Nº de Lote/Partida o Ubicación de origen">
       </div>
+
       <div class="mode-sel">
         <button class="mode-btn on" id="mode-res-foto" onclick="setResMode('foto')">📷 Foto Envase</button>
         <button class="mode-btn" id="mode-res-texto" onclick="setResMode('texto')">⌨️ Descripción</button>
       </div>
+
       <div id="res-foto-panel">
         <div class="upload-area" id="res-upload-area" onclick="triggerGalleryPicker('res')">
           <div class="upload-icon">🖼️</div>
@@ -220,21 +242,25 @@
         </div>
         <div class="cam-grid">
           <label class="cam-btn" for="res-camera">
-            <input type="file" id="res-camera" accept="image/*" capture="environment" onchange="processAndHandleImage(this,'res')">
-            <div class="icon">📷</div><div class="txt">Cámara</div>
+            <input type="file" id="res-camera" accept="image/*" capture="environment" onchange="handleImage(this,'res')">
+            <div class="icon">📷</div>
+            <div class="txt">Cámara</div>
           </label>
           <label class="cam-btn" for="res-gallery">
-            <input type="file" id="res-gallery" accept="image/*" onchange="processAndHandleImage(this,'res')">
-            <div class="icon">🖼️</div><div class="txt">Galería</div>
+            <input type="file" id="res-gallery" accept="image/*" onchange="handleImage(this,'res')">
+            <div class="icon">🖼️</div>
+            <div class="txt">Galería</div>
           </label>
         </div>
       </div>
+
       <div id="res-texto-panel" class="hidden">
         <div class="card">
           <div class="card-title">Detalles del Residuo Industrial</div>
-          <textarea id="res-desc" placeholder="Ej: Bidón de 20L con restos de disolvente orgánico..." oninput="checkResText()"></textarea>
+          <textarea id="res-desc" placeholder="Ej: Bidón de 20L con restos de disolvente orgánico, etiqueta borrada, olor característico a acetona..." oninput="checkResText()"></textarea>
         </div>
       </div>
+
       <div class="toggle-row">
         <div>
           <div class="toggle-text">¿Tránsito internacional / Exportación?</div>
@@ -245,19 +271,27 @@
           <span class="slider"></span>
         </label>
       </div>
-      <button class="btn btn-primary" id="btn-clasificar" disabled onclick="clasificarResiduo()">🔍 ANALIZAR Y CLASIFICAR</button>
+
+      <button class="btn btn-primary" id="btn-clasificar" disabled onclick="clasificarResiduo()">
+        🔍 ANALIZAR Y CLASIFICAR
+      </button>
+
       <div id="res-results"></div>
     </div>
+
     <div id="tab-etiqueta" class="tab-content hidden">
       <div class="section-title">Verificación de etiquetado</div>
+
       <div class="card">
         <div class="card-title">Trazabilidad (Sage 200)</div>
         <input type="text" id="etq-lote" placeholder="Nº de Lote/Partida o Referencia de producto">
       </div>
+
       <div class="mode-sel">
         <button class="mode-btn on" id="mode-etq-foto" onclick="setEtqMode('foto')">📷 Captura Etiqueta</button>
         <button class="mode-btn" id="mode-etq-texto" onclick="setEtqMode('texto')">⌨️ Texto Manual</button>
       </div>
+
       <div id="etq-foto-panel">
         <div class="upload-area" id="etq-upload-area" onclick="triggerGalleryPicker('etq')">
           <div class="upload-icon">🏷️</div>
@@ -267,75 +301,101 @@
         </div>
         <div class="cam-grid">
           <label class="cam-btn" for="etq-camera">
-            <input type="file" id="etq-camera" accept="image/*" capture="environment" onchange="processAndHandleImage(this,'etq')">
-            <div class="icon">📷</div><div class="txt">Cámara</div>
+            <input type="file" id="etq-camera" accept="image/*" capture="environment" onchange="handleImage(this,'etq')">
+            <div class="icon">📷</div>
+            <div class="txt">Cámara</div>
           </label>
           <label class="cam-btn" for="etq-gallery">
-            <input type="file" id="etq-gallery" accept="image/*" onchange="processAndHandleImage(this,'etq')">
-            <div class="icon">🖼️</div><div class="txt">Galería</div>
+            <input type="file" id="etq-gallery" accept="image/*" onchange="handleImage(this,'etq')">
+            <div class="icon">🖼️</div>
+            <div class="txt">Galería</div>
           </label>
         </div>
       </div>
+
       <div id="etq-texto-panel" class="hidden">
         <div class="card">
           <div class="card-title">Ficha técnica o composición descrita</div>
-          <textarea id="etq-desc" placeholder="Ej: Ácido clorhídrico 37%, pictograma GHS05 Corrosivo, Frases H314..." oninput="checkEtqText()"></textarea>
+          <textarea id="etq-desc" placeholder="Ej: Ácido clorhídrico 37%, marca comercial, pictograma GHS05 Corrosivo, Frases H314..." oninput="checkEtqText()"></textarea>
         </div>
       </div>
-      <button class="btn btn-primary" id="btn-verificar" disabled onclick="verificarEtiqueta()">🏷️ VERIFICAR ETIQUETADO CLP</button>
+
+      <button class="btn btn-primary" id="btn-verificar" disabled onclick="verificarEtiqueta()">
+        🏷️ VERIFICAR ETIQUETADO CLP
+      </button>
+
       <div id="etq-results"></div>
     </div>
+
     <div id="tab-historial" class="tab-content hidden">
       <div class="section-title">Registro histórico de análisis</div>
       <div id="historial-list"></div>
-      <button class="btn btn-danger" onclick="clearHistorial()" style="margin-top:12px;">🗑️ Vaciar Historial Completo</button>
+      <button class="btn btn-danger" onclick="clearHistorial()" style="margin-top:12px;">
+        🗑️ Vaciar Historial Completo
+      </button>
     </div>
+
   </div>
+
   <div class="bottom-nav">
-    <button class="nav-item on" id="nav-residuos" onclick="switchTab('residuos')"><span class="nav-icon">🧪</span><span>RESIDUOS</span></button>
-    <button class="nav-item" id="nav-etiqueta" onclick="switchTab('etiqueta')"><span class="nav-icon">🏷️</span><span>ETIQUETAS</span></button>
-    <button class="nav-item" id="nav-historial" onclick="switchTab('historial')"><span class="nav-icon">📋</span><span>HISTORIAL</span></button>
+    <button class="nav-item on" id="nav-residuos" onclick="switchTab('residuos')">
+      <span class="nav-icon">🧪</span>
+      <span>RESIDUOS</span>
+    </button>
+    <button class="nav-item" id="nav-etiqueta" onclick="switchTab('etiqueta')">
+      <span class="nav-icon">🏷️</span>
+      <span>ETIQUETAS</span>
+    </button>
+    <button class="nav-item" id="nav-historial" onclick="switchTab('historial')">
+      <span class="nav-icon">📋</span>
+      <span>HISTORIAL</span>
+    </button>
   </div>
-  resultsDiv.innerHTML = `<div class="card" style="text-align:center;">⏳ Procesando análisis normativo bajo CLP/ADR/LER...</div>`;
 
-      try {
-        let payload = {};
+  <script>
+    // ===== CONFIGURACIÓN API Y PROMPT NORMATIVO DEL INSPECTOR QUÍMICO =====
+    const GEMINI_URL = (key) => `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`;
 
-        if (state.modes.res === 'foto' && state.images.res) {
-          const base64Parts = state.images.res.split(',');
-          const mimeType = base64Parts[0].match(/:(.*?);/)[1];
-          const base64Data = base64Parts[1];
+    const systemInstruction = `Eres un sistema experto en seguridad química industrial y logística de almacenamiento, especializado en el estricto cumplimiento del Reglamento Europeo CLP (CE Nº 1272/2008), el Sistema Globalmente Armonizado (SGA / GHS), el Acuerdo ADR 2026 y la Lista Europea de Residuos (Decisión 2000/532/CE - Código LER).
 
-          payload = {
-            contents: [{
-              parts: [
-                { text: `Analiza este residuo industrial para su clasificación LER/CLP/ADR. Exportación Internacional activa: ${isExport}. Operario en turno: ${operator}. Lote/Partida Sage 200: ${lote}` },
-                { inlineData: { mimeType: mimeType, data: base64Data } }
-              ]
-            }]
-          };
-        } else {
-          const textDesc = document.getElementById('res-desc').value;
-          payload = {
-            contents: [{
-              parts: [{ text: `Analiza la descripción del residuo: "${textDesc}". Exportación Internacional activa: ${isExport}. Operario en turno: ${operator}. Lote/Partida Sage 200: ${lote}` }]
-            }]
-          };
-        }
+Tu tarea es analizar la información proporcionada (ya sea una imagen de un envase/etiqueta o una descripción textual) y generar obligatoriamente un objeto JSON con la estructura exacta que se detalla a continuación. No debes incluir ninguna introducción, saludos, explicaciones preliminares ni bloques de código markdown (como \`\`\`json ... \`\`\`). Devuelve únicamente el texto plano del JSON.
 
-        const jsonResponse = await llamarGemini(payload);
+Estructura JSON requerida:
+{
+  "producto": {
+    "nombre_comercial": "Nombre o descripción identificada del producto químico o residuo",
+    "componentes_activos": ["Sustancia o compuesto A", "Sustancia o compuesto B"]
+  },
+  "clp": {
+    "pictogramas_codigo": ["GHS02", "GHS07"],
+    "palabra_advertencia": "PELIGRO / ATENCIÓN / NINGUNA",
+    "frases_h": ["H225", "H319"],
+    "frases_p": ["P210", "P280"]
+  },
+  "gestion_residuos": {
+    "codigo_ler": "XXXXXX",
+    "peligroso": true,
+    "descripcion_ler": "Descripción oficial del código asignado dentro de la Lista Europea de Residuos"
+  },
+  "almacenamiento_adq_adr": {
+    "clase_adr": "Clase de peligro ADR identificada (ej: Clase 3 Líquidos Inflamables)",
+    "incompatibilidades_criticas": [
+      "Incompatibilidad 1 (ej: No almacenar junto a sustancias de Clase 5.1 Comburentes)",
+      "Incompatibilidad 2"
+    ],
+    "medidas_confinamiento": "Requisitos de almacenamiento, ventilación, distancias o cubeto de retención según la normativa de almacenamiento de productos químicos aplicable"
+  },
+  "verificacion_etiqueta": {
+    "conforme": true,
+    "deficiencias_detectadas": [
+      "Si conforme es false, listar aquí las faltas detectadas (ej: Falta pictograma obligatorio de peligro para el medio ambiente GHS09 o frases H obligatorias)"
+    ]
+  }
+}
 
-        state.lastResiduo = jsonResponse;
-        renderResultadosQuimicos(jsonResponse, resultsDiv, operator, lote);
-        saveToHistorial('Clasificación Residuos', jsonResponse.producto?.nombre_comercial || 'Residuo Analizado', operator, lote, jsonResponse);
-        showToast('Análisis normativo completado');
+Reglas operativas estrictas:
+1. Si los datos indican que el residuo es peligroso, el valor de "peligroso" debe ser true y el "codigo_ler" debe corresponder al código oficial con asterisco (*).
+2. Si el operario ha marcado la opción de exportación o tránsito internacional, valida que las Frases H y P utilicen la nomenclatura estandarizada internacional del SGA/GHS y añade en "medidas_confinamiento" cualquier consideración idiomática o de etiquetado para aduanas.
+3. Mantén las respuestas técnicas, concisas y directamente ligadas a los códigos oficiales vigentes de las normativas. Si la información proporcionada es insuficiente para determinar algún campo, utiliza valores lógicos coherentes basados en el peor escenario de riesgo (principio de prudencia).`;
 
-      } catch (error) {
-        console.error(error);
-        resultsDiv.innerHTML = `<div class="card" style="border-left:4px solid var(--danger);">❌ Error de procesamiento: ${error.message}</div>`;
-        showToast('Error de análisis', 'err');
-      } finally {
-        btn.disabled = false;
-        updateActionButtonsState();
-      }
-    }
+    const LOGO_B64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOYAAADmCAYAAADBavm7AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEge
