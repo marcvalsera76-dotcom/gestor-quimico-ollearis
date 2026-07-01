@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Subir Archivos - Ollearis</title>
+<style>
+  :root{--primary:#1B3A6B;--gold:#D4AF37;--bg:#f0f4f8;--surface:#fff;--border:#e2e8f0;--text:#1a1a2e;--muted:#718096;--danger:#ff3d00;--success:#00c853;}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:16px 16px 60px;min-height:100dvh;}
+  .header{background:var(--primary);color:#fff;padding:18px 16px;border-radius:16px;margin-bottom:16px;box-shadow:0 4px 12px rgba(0,0,0,0.15);}
+  .header h1{font-size:19px;font-weight:800;}
+  .header p{font-size:12px;opacity:0.85;margin-top:2px;}
+  .card{background:var(--surface);border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+  .card-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;}
+  input[type=text],input[type=password]{width:100%;background:#f8f9fa;border:1.5px solid var(--border);border-radius:10px;padding:13px 14px;font-size:15px;outline:none;margin-bottom:10px;}
+  input:focus{border-color:var(--primary);background:#fff;}
+  .btn{width:100%;min-height:50px;border:none;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;margin-bottom:10px;}
+  .btn-primary{background:var(--primary);color:#fff;}
+  .btn-primary:disabled{opacity:0.4;}
+  .btn-gold{background:var(--gold);color:#1a1a2e;}
+  .file-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;}
+  .file-row:last-child{border-bottom:none;}
+  #status{font-size:13px;font-weight:600;padding:10px;border-radius:10px;margin-bottom:10px;display:none;}
+  #status.ok{display:block;background:rgba(0,200,83,0.1);color:#00a844;}
+  #status.err{display:block;background:rgba(255,61,0,0.1);color:var(--danger);}
+  #status.info{display:block;background:rgba(27,58,107,0.08);color:var(--primary);}
+  progress{width:100%;height:8px;border-radius:4px;margin-bottom:10px;}
+</style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>📤 Subir Archivos al Repo</h1>
+    <p>gestor-quimico-ollearis · GitHub Contents API</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Credenciales (Fine-grained Token)</div>
+    <input type="password" id="token" placeholder="ghp_... (Contents: Read and write)" autocomplete="off">
+    <input type="text" id="repo" placeholder="usuario/repositorio" value="marcvalsera76-dotcom/gestor-quimico-ollearis">
+    <input type="text" id="branch" placeholder="Rama" value="main">
+  </div>
+
+  <div class="card">
+    <div class="card-title">Archivo a subir</div>
+    <input type="file" id="fileInput" style="margin-bottom:10px;">
+    <input type="text" id="targetPath" placeholder="Ruta destino (ej: index.html)">
+    <div id="status"></div>
+    <progress id="progress" value="0" max="100" style="display:none;"></progress>
+    <button class="btn btn-primary" id="btnUpload" onclick="subirArchivo()" disabled>⬆️ Subir a GitHub</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Archivos en el repo</div>
+    <button class="btn btn-gold" onclick="listarArchivos()">🔄 Listar archivos raíz</button>
+    <div id="fileList"></div>
+  </div>
+
+<script>
+  const $ = id => document.getElementById(id);
+
+  // Guardado local de credenciales para MIUI (persistencia entre sesiones del uploader)
+  window.addEventListener('load', () => {
+    const t = localStorage.getItem('gh_token');
+    const r = localStorage.getItem('gh_repo');
+    if (t) $('token').value = t;
+    if (r) $('repo').value = r;
+    checkReady();
+  });
+
+  ['token','repo','branch','targetPath'].forEach(id => {
+    $(id).addEventListener('change', checkReady);
+    $(id).addEventListener('blur', checkReady);
+  });
+  $('fileInput').addEventListener('change', checkReady);
+
+  function checkReady() {
+    const ready = $('token').value.trim() && $('repo').value.trim() &&
+                  $('fileInput').files.length > 0 && $('targetPath').value.trim();
+    $('btnUpload').disabled = !ready;
+    if ($('token').value.trim()) localStorage.setItem('gh_token', $('token').value.trim());
+    if ($('repo').value.trim()) localStorage.setItem('gh_repo', $('repo').value.trim());
+  }
+
+  function showStatus(msg, type) {
+    const s = $('status');
+    s.textContent = msg;
+    s.className = type;
+  }
+
+  function toBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function getSha(repo, path, branch, token) {
+    const url = `https://api.github.com/repos/${repo}/contents/${encodeURIComponent(path)}?ref=${branch}`;
+    const res = await fetch(url, {
+      headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' }
+    });
+    if (res.status === 404) return null; // archivo nuevo
+    if (!res.ok) throw new Error(`Error consultando SHA: ${res.status}`);
+    const data = await res.json();
+    return data.sha;
+  }
+
+  async function subirArchivo() {
+    const token = $('token').value.trim();
+    const repo = $('repo').value.trim();
+    const branch = $('branch').value.trim() || 'main';
+    const path = $('targetPath').value.trim().replace(/^\/+/, '');
+    const file = $('fileInput').files[0];
+
+    if (!token || !repo || !path || !file) {
+      showStatus('Faltan datos obligatorios.', 'err');
+      return;
+    }
+
+    $('btnUpload').disabled = true;
+    $('progress').style.display = 'block';
+    $('progress').value = 20;
+    showStatus('Codificando archivo...', 'info');
+
+    try {
+      const content = await toBase64(file);
+      $('progress').value = 40;
+
+      showStatus('Comprobando si el archivo ya existe...', 'info');
+      const sha = await getSha(repo, path, branch, token);
+      $('progress').value = 60;
+
+      showStatus('Subiendo a GitHub...', 'info');
+      const body = {
+        message: sha ? `Actualiza ${path}` : `Añade ${path}`,
+        content: content,
+        branch: branch
+      };
+      if (sha) body.sha = sha;
+
+      const putRes = await fetch(`https://api.github.com/repos/${repo}/contents/${encodeURIComponent(path)}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/vnd.github+json',
+    Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      });
+
+      $('progress').value = 90;
+
+      if (!putRes.ok) {
+        const err = await putRes.json();
+        throw new Error(err.message || `Error HTTP ${putRes.status}`);
+      }
+
+      $('progress').value = 100;
+      showStatus(`✓ Subido correctamente: ${path}`, 'ok');
+      setTimeout(() => { $('progress').style.display = 'none'; }, 1500);
+    } catch (e) {
+      showStatus(`✗ Error: ${e.message}`, 'err');
+      $('progress').style.display = 'none';
+    } finally {
+      checkReady();
+    }
+  }
+
+  async function listarArchivos() {
+    const token = $('token').value.trim();
+    const repo = $('repo').value.trim();
+    const branch = $('branch').value.trim() || 'main';
+    if (!token || !repo) { showStatus('Introduce token y repo primero.', 'err'); return; }
+
+    showStatus('Consultando archivos...', 'info');
+    try {
+      const res = await fetch(`https://api.github.com/repos/${repo}/contents/?ref=${branch}`, {
+        headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' }
+      });
+      if (!res.ok) throw new Error(`Error HTTP ${res.status}`);
+      const files = await res.json();
+      const list = $('fileList');
+      list.innerHTML = '';
+      files.forEach(f => {
+        const row = document.createElement('div');
+        row.className = 'file-row';
+        row.innerHTML = `<span>${f.type === 'dir' ? '📁' : '📄'}</span><span>${f.name}</span>`;
+        list.appendChild(row);
+      });
+      showStatus(`✓ ${files.length} elementos encontrados`, 'ok');
+    } catch (e) {
+      showStatus(`✗ Error: ${e.message}`, 'err');
+    }
+  }
+</script>
+</body>
+</html>
