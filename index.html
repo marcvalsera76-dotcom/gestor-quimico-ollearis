@@ -1127,24 +1127,21 @@ Reglas operativas estrictas:
 
     // ===== COMPARTIR/IMPRIMIR ETIQUETA (Web Share API con fallback a descarga) =====
     async function compartirOGuardarPDF(doc, filename){
+      // En MIUI, navigator.share() con archivos dispara el crash de IntentResolver
+      // y cierra la pestaña. Se descarga el PDF directamente, que es estable.
       try{
-        const blob = doc.output('blob');
-        const file = new File([blob], filename, { type: 'application/pdf' });
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-          await navigator.share({
-            files: [file],
-            title: filename,
-            text: 'Etiqueta Ollearis - ' + filename
-          });
-          showToast('Etiqueta compartida');
-          return;
+        doc.save(filename);
+        showToast('Etiqueta descargada: ' + filename);
+      }catch(e){
+        // Fallback: abrir el PDF en pestaña nueva para guardarlo desde el visor
+        try{
+          const url = doc.output('bloburl');
+          window.open(url, '_blank');
+          showToast('Etiqueta abierta en pestaña nueva');
+        }catch(e2){
+          showToast('Error al guardar el PDF: ' + (e2.message||e.message), 'err');
         }
-      } catch(e){
-        // Si el usuario cancela el share, no forzar descarga adicional
-        if (e && e.name === 'AbortError') return;
       }
-      doc.save(filename);
-      showToast('Etiqueta generada');
     }
 
     // ===== ETIQUETA IMPRIMIBLE 20x14cm - RESIDUOS (RD 833/1988 mod. · Orden MAM/304/2002 · APQ) =====
