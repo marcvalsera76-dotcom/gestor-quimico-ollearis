@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Subir por Pegado - Ollearis</title>
+<style>
+  :root{--primary:#1B3A6B;--gold:#D4AF37;--bg:#f0f4f8;--surface:#fff;--border:#e2e8f0;--text:#1a1a2e;--muted:#718096;--danger:#ff3d00;--success:#00c853;}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:16px 16px 60px;min-height:100dvh;}
+  .header{background:var(--primary);color:#fff;padding:18px 16px;border-radius:16px;margin-bottom:16px;box-shadow:0 4px 12px rgba(0,0,0,0.15);}
+  .header h1{font-size:19px;font-weight:800;}
+  .header p{font-size:12px;opacity:0.85;margin-top:2px;}
+  .card{background:var(--surface);border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+  .card-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;}
+  input[type=text],input[type=password]{width:100%;background:#f8f9fa;border:1.5px solid var(--border);border-radius:10px;padding:13px 14px;font-size:15px;outline:none;margin-bottom:10px;}
+  textarea{width:100%;min-height:180px;background:#f8f9fa;border:1.5px solid var(--border);border-radius:10px;padding:13px 14px;font-size:12px;font-family:monospace;outline:none;margin-bottom:6px;resize:vertical;}
+  input:focus,textarea:focus{border-color:var(--primary);background:#fff;}
+  .btn{width:100%;min-height:50px;border:none;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;margin-bottom:10px;}
+  .btn-primary{background:var(--primary);color:#fff;}
+  .btn-primary:disabled{opacity:0.4;}
+  .charcount{font-size:11px;color:var(--muted);margin-bottom:10px;text-align:right;}
+  #status{font-size:13px;font-weight:600;padding:10px;border-radius:10px;margin-bottom:10px;display:none;}
+  #status.ok{display:block;background:rgba(0,200,83,0.1);color:#00a844;}
+  #status.err{display:block;background:rgba(255,61,0,0.1);color:var(--danger);}
+  #status.info{display:block;background:rgba(27,58,107,0.08);color:var(--primary);}
+  progress{width:100%;height:8px;border-radius:4px;margin-bottom:10px;}
+</style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>📋 Subir por Pegado</h1>
+    <p>gestor-quimico-ollearis · Evita el selector de archivos MIUI</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Credenciales (Fine-grained Token)</div>
+    <input type="password" id="token" placeholder="ghp_... (Contents: Read and write)" autocomplete="off">
+    <input type="text" id="repo" placeholder="usuario/repositorio" value="marcvalsera76-dotcom/gestor-quimico-ollearis">
+    <input type="text" id="branch" placeholder="Rama" value="main">
+  </div>
+
+  <div class="card">
+    <div class="card-title">Ruta destino en el repo</div>
+    <input type="text" id="targetPath" placeholder="Ej: index.html" value="index.html">
+
+    <div class="card-title" style="margin-top:8px;">Pega aquí el contenido completo del archivo</div>
+    <textarea id="fileContent" placeholder="Mantén pulsado dentro de este cuadro y elige 'Pegar'..."></textarea>
+    <div class="charcount" id="charcount">0 caracteres</div>
+
+    <div id="status"></div>
+    <progress id="progress" value="0" max="100" style="display:none;"></progress>
+    <button class="btn btn-primary" id="btnUpload" onclick="subirArchivo()" disabled>⬆️ Subir a GitHub</button>
+  </div>
+
+<script>
+  const $ = id => document.getElementById(id);
+
+  window.addEventListener('load', () => {
+    const t = localStorage.getItem('gh_token');
+    const r = localStorage.getItem('gh_repo');
+    if (t) $('token').value = t;
+    if (r) $('repo').value = r;
+    checkReady();
+  });
+
+  ['token','repo','branch','targetPath'].forEach(id => {
+    $(id).addEventListener('change', checkReady);
+    $(id).addEventListener('blur', checkReady);
+  });
+  $('fileContent').addEventListener('input', () => {
+    $('charcount').textContent = $('fileContent').value.length.toLocaleString('es-ES') + ' caracteres';
+    checkReady();
+  });
+
+  function checkReady() {
+    const ready = $('token').value.trim() && $('repo').value.trim() &&
+                  $('targetPath').value.trim() && $('fileContent').value.trim().length > 0;
+    $('btnUpload').disabled = !ready;
+    if ($('token').value.trim()) localStorage.setItem('gh_token', $('token').value.trim());
+    if ($('repo').value.trim()) localStorage.setItem('gh_repo', $('repo').value.trim());
+  }
+
+  function showStatus(msg, type) {
+    const s = $('status');
+    s.textContent = msg;
+    s.className = type;
+  }
+
+  // Codifica texto UTF-8 a Base64 de forma segura (soporta tildes, ñ, etc.)
+  function utf8ToBase64(str) {
+    return btoa(unescape(encodeURIComponent(str)));
+  }
+
+  async function getSha(repo, path, branch, token) {
+    const url = `https://api.github.com/repos/${repo}/contents/${encodeURIComponent(path)}?ref=${branch}`;
+    const res = await fetch(url, {
+      headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' }
+    });
+    if (res.status === 404) return null;
+    if (!res.ok) throw new Error(`Error consultando SHA: ${res.status}`);
+    const data = await res.json();
+    return data.sha;
+  }
+
+  async function subirArchivo() {
+    const token = $('token').value.trim();
+    const repo = $('repo').value.trim();
+    const branch = $('branch').value.trim() || 'main';
+    const path = $('targetPath').value.trim().replace(/^\/+/, '');
+    const text = $('fileContent').value;
+
+    if (!token || !repo || !path || !text) {
+      showStatus('Faltan datos obligatorios.', 'err');
+      return;
+    }
+
+    $('btnUpload').disabled = true;
+    $('progress').style.display = 'block';
+    $('progress').value = 20;
+    showStatus('Codificando contenido...', 'info');
+
+    try {
+      const content = utf8ToBase64(text);
+      $('progress').value = 40;
+
+      showStatus('Comprobando si el archivo ya existe...', 'info');
+      const sha = await getSha(repo, path, branch, token);
+      $('progress').value = 60;
+
+      showStatus('Subiendo a GitHub...', 'info');
+      const body = {
+        message: sha ? `Actualiza ${path} (pegado)` : `Añade ${path} (pegado)`,
+        content: content,
+        branch: branch
+      };
+      if (sha) body.sha = sha;
+
+      const putRes = await fetch(`https://api.github.com/repos/${repo}/contents/${encodeURIComponent(path)}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/vnd.github+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      });
+
+      $('progress').value = 90;
+
+      if (!putRes.ok) {
+        const err = await putRes.json();
+        throw new Error(err.message || `Error HTTP ${putRes.status}`);
+      }
+
+      $('progress').value = 100;
+      showStatus(`✓ Subido correctamente: ${path} (${text.length.toLocaleString('es-ES')} caracteres)`, 'ok');
+      setTimeout(() => { $('progress').style.display = 'none'; }, 1500);
+    } catch (e) {
+      showStatus(`✗ Error: ${e.message}`, 'err');
+      $('progress').style.display = 'none';
+    } finally {
+      checkReady();
+    }
+  }
+</script>
+</body>
+</html>
